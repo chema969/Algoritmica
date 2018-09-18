@@ -1,5 +1,8 @@
 #include "FuncionesAuxiliares.hpp"
 #include <iostream>
+#include "macros.hpp"
+#include "Tiempo.hpp"
+#include "Vector.hpp"
 
 
 
@@ -51,4 +54,81 @@ int menu(){
     std::cin.ignore();
 
 	return opcion;
+}
+
+
+void metodoSeleccion(){
+   Vector v;
+   Clock time;
+   int inicio,fin,subida,repeticiones;
+      
+   std::ofstream fichero;
+   fichero.open("seleccion.txt");
+   
+   std::cout<<"Introduce cantidad de datos inicial:";
+   std::cin>>inicio;
+   
+   std::cout<<"Introduce cantidad de datos final:";
+   std::cin>>fin;
+
+   std::cout<<"Introduce aumento por repeticion:";  
+   std::cin>>subida;
+   
+   std::cout<<"Introduce numero de repeticiones por cantidad:";
+   std::cin>>repeticiones;
+
+   if(!evaluarDatos(inicio,fin,subida,repeticiones)){
+       std::cout<<"Datos erroneos, se vuelve al menu"<<std::endl;
+       return;
+      }
+   
+    while(inicio<fin){
+      float tiempo=0;
+      v.resize(inicio);
+
+      for(int i=0;i<repeticiones;i++){
+         v.rellenarVector();
+         time.start();
+         v.seleccion();
+         if (time.isStarted())
+	{
+          time.stop();
+          tiempo+=time.elapsed();
+         }
+      }     
+     fichero<<inicio<<"    "<<tiempo/repeticiones<<"\n";                 
+     inicio=inicio+subida;
+   }
+}
+  
+}
+
+
+
+
+bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
+  if(inicio<=0){ 
+          std::cout<<"Datos de inicio no permitido"<<std::endl;
+          return false;
+         }
+
+  if(fin<=0){
+          std::cout<<"Datos de final no permitido"<<std::endl;
+          return false;
+         }
+
+  if(subida<=0){ 
+          std::cout<<"Datos de aumento no permitido"<<std::endl;
+          return false;
+         }
+
+  if(repeticiones<=0){
+          std::cout<<"Datos de repeticiones no permitido"<<std::endl;
+          return false;
+         }
+
+  if(inicio>=fin){
+          std::cout<<"Datos de inicio es mayor que de fin"<<std::endl;
+          return false;
+         }
 }

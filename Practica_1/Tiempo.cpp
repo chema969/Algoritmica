@@ -7,7 +7,7 @@
 #include "Tiempo.hpp"
 
 
-uint64_t elapsed() const
+uint64_t Clock::elapsed() const
     {
       assert (!_isStarted);
       uint64_t startT = (uint64_t)_start.tv_sec * 1000000LL + (uint64_t)_start.tv_nsec / 1000LL;

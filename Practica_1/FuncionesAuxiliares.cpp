@@ -3,7 +3,7 @@
 #include "macros.hpp"
 #include "Tiempo.hpp"
 #include "Vector.hpp"
-
+#include <fstream>
 
 
 int menu(){
@@ -82,8 +82,8 @@ void metodoSeleccion(){
        return;
       }
    
-    while(inicio<fin){
-      float tiempo=0;
+    while(inicio<=fin){
+      double tiempo=0;
       v.resize(inicio);
 
       for(int i=0;i<repeticiones;i++){
@@ -96,12 +96,14 @@ void metodoSeleccion(){
           tiempo+=time.elapsed();
          }
       }     
-     fichero<<inicio<<"    "<<tiempo/repeticiones<<"\n";                 
+     double aux=tiempo/repeticiones;
+     fichero<<inicio<<" "<<aux<<"\n";                 
      inicio=inicio+subida;
    }
+fichero.close();
 }
   
-}
+
 
 
 
@@ -131,4 +133,51 @@ bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
           std::cout<<"Datos de inicio es mayor que de fin"<<std::endl;
           return false;
          }
+  return true;
+}
+
+void metodoMonticulos(){ 
+  Vector v;
+   Clock time;
+   int inicio,fin,subida,repeticiones;
+      
+   std::ofstream fichero;
+   fichero.open("heapsort.txt");
+   
+   std::cout<<"Introduce cantidad de datos inicial:";
+   std::cin>>inicio;
+   
+   std::cout<<"Introduce cantidad de datos final:";
+   std::cin>>fin;
+
+   std::cout<<"Introduce aumento por repeticion:";  
+   std::cin>>subida;
+   
+   std::cout<<"Introduce numero de repeticiones por cantidad:";
+   std::cin>>repeticiones;
+
+   if(!evaluarDatos(inicio,fin,subida,repeticiones)){
+       std::cout<<"Datos erroneos, se vuelve al menu"<<std::endl;
+       return;
+      }
+   
+    while(inicio<=fin){
+      double tiempo=0;
+      v.resize(inicio);
+
+      for(int i=0;i<repeticiones;i++){
+         v.rellenarVector();
+         time.start();
+         v.heapsort();
+         if (time.isStarted())
+	{
+          time.stop();
+          tiempo+=time.elapsed();
+         }
+      }     
+     double aux=tiempo/repeticiones;
+     fichero<<inicio<<" "<<aux<<"\n";                 
+     inicio=inicio+subida;
+   }
+fichero.close();
 }

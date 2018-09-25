@@ -167,6 +167,7 @@ void metodoMonticulos(){
 
       for(int i=0;i<repeticiones;i++){
          v.rellenarVector();
+         v.heapify();
          time.start();
          v.heapsort();
          if (time.isStarted())

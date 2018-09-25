@@ -1,10 +1,11 @@
 #include "FuncionesAuxiliares.hpp"
+#include <vector>
 #include <iostream>
 #include "macros.hpp"
 #include "Tiempo.hpp"
 #include "Vector.hpp"
 #include <fstream>
-
+#include <cmath>
 
 int menu(){
 
@@ -61,9 +62,12 @@ void metodoSeleccion(){
    Vector v;
    Clock time;
    int inicio,fin,subida,repeticiones;
-      
+   std::vector< std::vector< double> > minimosCuadrados;
+   minimosCuadrados.resize(3);
+   for(int i=0;i<3;i++)     minimosCuadrados[i].resize(3,0);  
+   
    std::ofstream fichero;
-   fichero.open("seleccion.txt");
+   fichero.open("Seleccion.txt");
    
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;
@@ -79,12 +83,18 @@ void metodoSeleccion(){
 
    if(!evaluarDatos(inicio,fin,subida,repeticiones)){
        std::cout<<"Datos erroneos, se vuelve al menu"<<std::endl;
+       std::cin.ignore();
        return;
       }
    
+  std::vector<double> tiempo((fin-inicio)/subida);
+  std::vector<double> tamanyo((fin-inicio)/subida);
+  int i=0;
+
     while(inicio<=fin){
       double tiempo=0;
       v.resize(inicio);
+      tamanyo[i]=inicio;
 
       for(int i=0;i<repeticiones;i++){
          v.rellenarVector();
@@ -96,10 +106,13 @@ void metodoSeleccion(){
           tiempo+=time.elapsed();
          }
       }     
-     double aux=tiempo/repeticiones;
-     fichero<<inicio<<" "<<aux<<"\n";                 
-     inicio=inicio+subida;
+     tiempo[i]=tiempo/repeticiones;
+     i++;
+  
    }
+calcularMinimosCuadrados(tamanyo,tiempo);
+
+
 fichero.close();
 }
   
@@ -107,6 +120,35 @@ fichero.close();
 
 
 
+
+void calcularMinimosCuadrados(std::vector<double> tamanyo,std::vector<double> tiempo){
+   std::vector< std::vector< double> > minimosCuadrados;
+   minimosCuadrados.resize(3);
+   for(int i=0;i<3;i++)     minimosCuadrados[i].resize(4,0);  
+   
+   minimosCuadrados[0][0]=tamanyo.size();
+   minimosCuadrados[0][1]=minimosCuadrados[1][0]=sumaVector(tiempo);
+   minimosCuadrados[0][2]=minimosCuadrados[1][1]=minimosCuadrados[2][0]=pow(sumaVector(tiempo),2);
+   minimosCuadrados[1][2]=minimosCuadrados[2][1]=pow(sumaVector(tiempo),3);
+   minimosCuadrados[2][2]=pow(sumaVector(tiempo),4);
+   minimosCuadrados[0][3]=sumaVector(tamanyo);
+
+
+
+
+
+
+
+
+
+
+
+
+double sumaVector(std::vector<double> vector){
+     double aux=0;
+      for(unsigned int i=0;i<vector.size();i++) aux+=vector[i];
+     return aux;
+}
 
 bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
   if(inicio<=0){ 
@@ -136,13 +178,16 @@ bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
   return true;
 }
 
+
+
+
 void metodoMonticulos(){ 
   Vector v;
    Clock time;
    int inicio,fin,subida,repeticiones;
       
    std::ofstream fichero;
-   fichero.open("heapsort.txt");
+   fichero.open("Heapsort.txt");
    
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;

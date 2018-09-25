@@ -1,3 +1,0 @@
-/home/i62cumuj/Algoritmica/Practica_1/build/CMakeFiles/rebuild_cache.dir
-/home/i62cumuj/Algoritmica/Practica_1/build/CMakeFiles/edit_cache.dir
-/home/i62cumuj/Algoritmica/Practica_1/build/CMakeFiles/Principal.dir

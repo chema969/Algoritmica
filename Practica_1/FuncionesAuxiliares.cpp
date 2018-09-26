@@ -6,6 +6,8 @@
 #include "Vector.hpp"
 #include <fstream>
 #include <cmath>
+#include <cassert>
+#include "sistemaEcuaciones.hpp"
 
 int menu(){
 
@@ -58,6 +60,11 @@ int menu(){
 }
 
 
+
+
+
+
+
 void metodoSeleccion(){
    Vector v;
    Clock time;
@@ -87,33 +94,50 @@ void metodoSeleccion(){
        return;
       }
    
-  std::vector<double> tiempo((fin-inicio)/subida);
-  std::vector<double> tamanyo((fin-inicio)/subida);
+  std::vector<double> tiempo(((fin-inicio)/subida)+1);
+  std::vector<double> tamanyo(((fin-inicio)/subida)+1);
   int i=0;
 
     while(inicio<=fin){
-      double tiempo=0;
+      double tiempoPasado=0;
       v.resize(inicio);
       tamanyo[i]=inicio;
 
-      for(int i=0;i<repeticiones;i++){
+      for(int j=0;j<repeticiones;j++){
          v.rellenarVector();
          time.start();
          v.seleccion();
          if (time.isStarted())
 	{
           time.stop();
-          tiempo+=time.elapsed();
+          tiempoPasado+=time.elapsed();
          }
       }     
-     tiempo[i]=tiempo/repeticiones;
+     tiempo[i]=tiempoPasado/repeticiones;
+     inicio+=subida;
      i++;
   
    }
-calcularMinimosCuadrados(tamanyo,tiempo);
 
+  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyo,3);
+  std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,3);
+  
 
-fichero.close();
+  std::vector< std::vector< double> > soluciones;
+  soluciones.resize(3);
+   for(int i=0;i<3;i++)     soluciones[i].resize(1,0);
+
+  resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, 3, soluciones);
+
+  //Ahora imprimo el resultado final
+  for(unsigned int i=0;i<tamanyo.size();i++){
+      double aprox=0;
+      for(double j=0;j<soluciones.size();j++){
+         aprox+=soluciones[j][0]*pow(tamanyo[i],j);
+      }
+      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox<<"\n";
+   }
+  fichero.close();
 }
   
 
@@ -121,17 +145,57 @@ fichero.close();
 
 
 
-void calcularMinimosCuadrados(std::vector<double> tamanyo,std::vector<double> tiempo){
-   std::vector< std::vector< double> > minimosCuadrados;
-   minimosCuadrados.resize(3);
-   for(int i=0;i<3;i++)     minimosCuadrados[i].resize(4,0);  
+
+
+
+std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vector<double> tamanyo,std::vector<double>tiempo,int n){
+   std::vector< std::vector< double> > minimosCuadradosTerminosInd;
+
+   minimosCuadradosTerminosInd.resize(n);
+   for(int i=0;i<n;i++) minimosCuadradosTerminosInd[i].resize(1,0);
    
-   minimosCuadrados[0][0]=tamanyo.size();
-   minimosCuadrados[0][1]=minimosCuadrados[1][0]=sumaVector(tiempo);
-   minimosCuadrados[0][2]=minimosCuadrados[1][1]=minimosCuadrados[2][0]=pow(sumaVector(tiempo),2);
-   minimosCuadrados[1][2]=minimosCuadrados[2][1]=pow(sumaVector(tiempo),3);
-   minimosCuadrados[2][2]=pow(sumaVector(tiempo),4);
-   minimosCuadrados[0][3]=sumaVector(tamanyo);
+   for(int i=0;i<n;i++)
+         minimosCuadradosTerminosInd[i][0]=sumatorioMultValores(tamanyo,tiempo,i);
+
+   return minimosCuadradosTerminosInd;
+}
+
+
+
+
+
+double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiempo,double n){
+    assert(tiempo.size()==tamanyo.size());
+    double aux=0;
+   
+    for(unsigned int i=0;i<tiempo.size();i++)
+        aux+=(tiempo[i]*pow(tamanyo[i],n));
+
+
+    return aux;
+
+
+}
+
+
+
+
+
+std::vector < std::vector< double> > calcularMinimosCuadrados(std::vector<double> tamanyo,int n){
+   std::vector< std::vector< double> > minimosCuadrados;
+   minimosCuadrados.resize(n);
+   for(int i=0;i<n;i++)     minimosCuadrados[i].resize(n,0);  
+   
+
+   for(double i=0;i<n;i++){
+      for(double j=0;j<n;j++){
+          minimosCuadrados[i][j]=minimosCuadrados[j][i]=sumaVector(tamanyo,j+i);        
+      }
+   }
+
+
+   return minimosCuadrados;
+}
 
 
 
@@ -142,13 +206,19 @@ void calcularMinimosCuadrados(std::vector<double> tamanyo,std::vector<double> ti
 
 
 
-
-
-double sumaVector(std::vector<double> vector){
+double sumaVector(std::vector<double> vector,double exponente){
      double aux=0;
-      for(unsigned int i=0;i<vector.size();i++) aux+=vector[i];
+      for(unsigned int i=0;i<vector.size();i++) aux+=pow(vector[i],exponente);
      return aux;
 }
+
+
+
+
+
+
+
+
 
 bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
   if(inicio<=0){ 
@@ -203,14 +273,20 @@ void metodoMonticulos(){
 
    if(!evaluarDatos(inicio,fin,subida,repeticiones)){
        std::cout<<"Datos erroneos, se vuelve al menu"<<std::endl;
+       std::cin.ignore();
        return;
       }
    
-    while(inicio<=fin){
-      double tiempo=0;
-      v.resize(inicio);
+   std::vector<double> tiempo(((fin-inicio)/subida)+1);
+   std::vector<double> tamanyo(((fin-inicio)/subida)+1);
+   int i=0;
 
-      for(int i=0;i<repeticiones;i++){
+    while(inicio<=fin){
+      double tiempoPasado=0;
+      v.resize(inicio);
+      tamanyo[i]=inicio;
+
+      for(int j=0;j<repeticiones;j++){
          v.rellenarVector();
          v.heapify();
          time.start();
@@ -218,12 +294,36 @@ void metodoMonticulos(){
          if (time.isStarted())
 	{
           time.stop();
-          tiempo+=time.elapsed();
+          tiempoPasado+=time.elapsed();
          }
       }     
-     double aux=tiempo/repeticiones;
-     fichero<<inicio<<" "<<aux<<"\n";                 
+     tiempo[i]=tiempoPasado/repeticiones;             
      inicio=inicio+subida;
+     i++;
    }
+
+  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyo,2);
+  std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,2);
+  
+
+  std::vector< std::vector< double> > soluciones;
+  soluciones.resize(2);
+   for(int i=0;i<2;i++)     soluciones[i].resize(1,0);
+
+  resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, 2, soluciones);
+
+  //Ahora imprimo el resultado final
+  for(unsigned int i=0;i<tamanyo.size();i++){
+      double aprox=0;
+         aprox+=soluciones[0][0];
+         aprox+=soluciones[1][0]*z(tamanyo[i]);
+      
+      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox<<"\n";
+   }
+
 fichero.close();
 }
+
+
+
+double z(double n){return n*log(n);}

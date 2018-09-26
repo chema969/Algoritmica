@@ -1,3 +1,0 @@
-/home/chema969/Algoritmica/Practica_1/build/CMakeFiles/edit_cache.dir
-/home/chema969/Algoritmica/Practica_1/build/CMakeFiles/Principal.dir
-/home/chema969/Algoritmica/Practica_1/build/CMakeFiles/rebuild_cache.dir

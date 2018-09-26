@@ -326,4 +326,4 @@ fichero.close();
 
 
 
-double z(double n){return n*log(n);}
+double z(double n){return n*log10(n);}

@@ -128,14 +128,23 @@ void metodoSeleccion(){
    for(int i=0;i<3;i++)     soluciones[i].resize(1,0);
 
   resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, 3, soluciones);
+  
+  std::vector<double> aprox;
+  aprox.resize(tiempo.size(),0);
+  for(unsigned int k=0;k<aprox.size();k++){
+      for(double j=0;j<soluciones.size();j++){
+         aprox[k]+=soluciones[j][0]*pow(tamanyo[k],j);
+      }
+  }
+
+  std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[2][0]<<"X^2+"<<soluciones[1][0]<<"X+"<<soluciones[0][0]<<std::endl;
+  std::cout<<"\nEl coeficiente de determinacion es "<<determinacion(tiempo,aprox)<<std::endl;
+  std::cin.ignore();
+  std::cin.ignore();
 
   //Ahora imprimo el resultado final
   for(unsigned int i=0;i<tamanyo.size();i++){
-      double aprox=0;
-      for(double j=0;j<soluciones.size();j++){
-         aprox+=soluciones[j][0]*pow(tamanyo[i],j);
-      }
-      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox<<"\n";
+      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
   fichero.close();
 }
@@ -164,6 +173,10 @@ std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vec
 
 
 
+
+
+
+
 double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiempo,double n){
     assert(tiempo.size()==tamanyo.size());
     double aux=0;
@@ -176,6 +189,64 @@ double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiem
 
 
 }
+
+
+double media(std::vector<double> v){
+   double media=0;
+   for(unsigned int i=0;i<v.size();i++){
+     media+=v[i];
+   }
+   return media/v.size();
+}
+
+
+
+
+
+double desviacionTipica(std::vector<double> v){
+    double medias=media(v);
+    double aux=0;
+    for(unsigned int i=0;i<v.size();i++)
+        aux+=pow(v[i]-medias,2); 
+    aux=aux/v.size();
+    aux=sqrt(aux);
+    return aux;
+   }
+
+double varianza(std::vector<double> v){
+    double medias=media(v);
+    double aux=0;
+    for(unsigned int i=0;i<v.size();i++)
+        aux+=pow(v[i]-medias,2); 
+    aux=aux/v.size();
+    return aux;
+   }
+
+
+double covarianza(std::vector<double> v1,std::vector<double> v2){
+    double mediaV1=media(v1);
+    double mediaV2=media(v2);
+    double sumV1V2=sumatorioMultValores(v1,v2,1);
+
+    double covarianzas=sumV1V2/v1.size();
+    covarianzas=covarianzas-mediaV1*mediaV2;
+    return covarianzas;
+}
+
+
+
+
+double determinacion(std::vector<double> aprox,std::vector<double> tiempo){
+     
+    double varianzaAprox=varianza(aprox);
+    double varianzaTiempo=varianza(tiempo);
+
+    return (varianzaAprox/varianzaTiempo);
+}
+
+
+
+
 
 
 
@@ -301,9 +372,13 @@ void metodoMonticulos(){
      inicio=inicio+subida;
      i++;
    }
-
-  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyo,2);
-  std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,2);
+  std::vector<double> tamanyoLog=tamanyo;
+  
+  for(unsigned int i=0;i<tamanyoLog.size();i++)
+            tamanyoLog[i]=z(tamanyoLog[i]);
+ 
+  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyoLog,2);
+  std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyoLog,tiempo,2);
   
 
   std::vector< std::vector< double> > soluciones;
@@ -312,13 +387,22 @@ void metodoMonticulos(){
 
   resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, 2, soluciones);
 
+
+  std::vector<double> aprox;
+  aprox.resize(tiempo.size(),0);
+  for(unsigned int k=0;k<aprox.size();k++){
+         aprox[k]+=soluciones[0][0];
+         aprox[k]+=soluciones[1][0]*z(tamanyo[i]);
+  }
+
+  std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[1][0]<<"XlogX+"<<soluciones[0][0]<<std::endl;
+  std::cout<<"\nEl coeficiente de determinacion es "<<determinacion(tiempo,aprox)<<std::endl;
+  std::cin.ignore();
+  std::cin.ignore();
   //Ahora imprimo el resultado final
   for(unsigned int i=0;i<tamanyo.size();i++){
-      double aprox=0;
-         aprox+=soluciones[0][0];
-         aprox+=soluciones[1][0]*z(tamanyo[i]);
       
-      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox<<"\n";
+      fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
 
 fichero.close();

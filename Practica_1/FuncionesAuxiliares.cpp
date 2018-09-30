@@ -7,6 +7,7 @@
 #include <fstream>
 #include <cmath>
 #include <cassert>
+#include <cstdlib>
 #include "sistemaEcuaciones.hpp"
 
 int menu(){
@@ -140,12 +141,36 @@ void metodoSeleccion(){
   std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[2][0]<<"X^2+"<<soluciones[1][0]<<"X+"<<soluciones[0][0]<<std::endl;
   std::cout<<"\nEl coeficiente de determinacion es "<<determinacion(tiempo,aprox)<<std::endl;
   std::cin.ignore();
-  std::cin.ignore();
+
 
   //Ahora imprimo el resultado final
   for(unsigned int i=0;i<tamanyo.size();i++){
       fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
+  
+  std::cout<<BIGREEN<<"Generando grafica..."<<RESET<<std::endl; 
+  system("mv -f Seleccion.txt ..");
+
+  system("../graficaSeleccion.sh");
+  int valorAprox;
+  do{
+    std::cout<<BIBLUE<<"Introduce un tamaño para aproximar su tiempo o 0 en caso de querer acabar: "<<RESET;
+    std::cin>>valorAprox;
+
+     if(valorAprox>0){
+
+         double valor=0;
+         for(int j=0;j<soluciones.size();j++)
+            valor+=soluciones[j][0]*pow(valorAprox,j);
+         std::cout<<"El tiempo aproximado para el tamaño "<<valorAprox<<" es igual a "<<valor<<std::endl;
+         std::cin.ignore();
+     }
+
+
+     if(valorAprox<0) std::cout<<"Tamaño no valido"<<std::endl;
+    }while(valorAprox!=0);
+   
+
   fichero.close();
 }
   
@@ -213,14 +238,24 @@ double desviacionTipica(std::vector<double> v){
     return aux;
    }
 
+
+
 double varianza(std::vector<double> v){
+   
     double medias=media(v);
+    
+   
     double aux=0;
+
     for(unsigned int i=0;i<v.size();i++)
-        aux+=pow(v[i]-medias,2); 
-    aux=aux/v.size();
+        aux+=(pow(v[i]-medias,2)/v.size()); 
+ 
+    aux=aux-pow(medias,2);
+
     return aux;
    }
+
+
 
 
 double covarianza(std::vector<double> v1,std::vector<double> v2){
@@ -392,7 +427,7 @@ void metodoMonticulos(){
   aprox.resize(tiempo.size(),0);
   for(unsigned int k=0;k<aprox.size();k++){
          aprox[k]+=soluciones[0][0];
-         aprox[k]+=soluciones[1][0]*z(tamanyo[i]);
+         aprox[k]+=soluciones[1][0]*z(tamanyo[k]);
   }
 
   std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[1][0]<<"XlogX+"<<soluciones[0][0]<<std::endl;
@@ -404,7 +439,28 @@ void metodoMonticulos(){
       
       fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
+  system("mv -f Heapsort.txt ..");
+  system("../graficaHeapsort.sh");
 
+
+int valorAprox;
+  do{
+    std::cout<<BIBLUE<<"Introduce un tamaño para aproximar su tiempo o 0 en caso de querer acabar: "<<RESET;
+    std::cin>>valorAprox;
+
+     if(valorAprox>0){
+
+         double valor=0;
+         valor+=soluciones[0][0];
+         valor+=soluciones[1][0]*z(valorAprox);
+         std::cout<<"El tiempo aproximado para el tamaño "<<valorAprox<<" es igual a "<<valor<<std::endl;
+         std::cin.ignore();
+     }
+
+
+     if(valorAprox<0) std::cout<<"Tamaño no valido"<<std::endl;
+    }while(valorAprox!=0);
+   
 fichero.close();
 }
 

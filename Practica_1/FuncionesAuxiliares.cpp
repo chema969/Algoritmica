@@ -39,7 +39,7 @@ int menu(){
 	std::cout << "[2] Ordenación por montículos";
 
 	posicion++;
-         
+
 	PLACE(posicion++,10);
 	std::cout << BIRED << "[0] Salir";
 
@@ -72,20 +72,20 @@ void metodoSeleccion(){
    int inicio,fin,subida,repeticiones;
    std::vector< std::vector< double> > minimosCuadrados;
    minimosCuadrados.resize(3);
-   for(int i=0;i<3;i++)     minimosCuadrados[i].resize(3,0);  
-   
+   for(int i=0;i<3;i++)     minimosCuadrados[i].resize(3,0);
+
    std::ofstream fichero;
    fichero.open("Seleccion.txt");
-   
+
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;
-   
+
    std::cout<<"Introduce cantidad de datos final:";
    std::cin>>fin;
 
-   std::cout<<"Introduce aumento por repeticion:";  
+   std::cout<<"Introduce aumento por repeticion:";
    std::cin>>subida;
-   
+
    std::cout<<"Introduce numero de repeticiones por cantidad:";
    std::cin>>repeticiones;
 
@@ -94,7 +94,7 @@ void metodoSeleccion(){
        std::cin.ignore();
        return;
       }
-   
+
   std::vector<double> tiempo(((fin-inicio)/subida)+1);
   std::vector<double> tamanyo(((fin-inicio)/subida)+1);
   int i=0;
@@ -113,23 +113,23 @@ void metodoSeleccion(){
           time.stop();
           tiempoPasado+=time.elapsed();
          }
-      }     
+      }
      tiempo[i]=tiempoPasado/repeticiones;
      inicio+=subida;
      i++;
-  
+
    }
 
   std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyo,3);
   std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,3);
-  
+
 
   std::vector< std::vector< double> > soluciones;
   soluciones.resize(3);
    for(int i=0;i<3;i++)     soluciones[i].resize(1,0);
 
   resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, 3, soluciones);
-  
+
   std::vector<double> aprox;
   aprox.resize(tiempo.size(),0);
   for(unsigned int k=0;k<aprox.size();k++){
@@ -140,17 +140,16 @@ void metodoSeleccion(){
 
   std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[2][0]<<"X^2+"<<soluciones[1][0]<<"X+"<<soluciones[0][0]<<std::endl;
   std::cout<<"\nEl coeficiente de determinacion es "<<determinacion(tiempo,aprox)<<std::endl;
-  std::cin.ignore();
 
 
   //Ahora imprimo el resultado final
   for(unsigned int i=0;i<tamanyo.size();i++){
       fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
-  
-  std::cout<<BIGREEN<<"Generando grafica..."<<RESET<<std::endl; 
-  system("mv -f Seleccion.txt ..");
 
+  std::cout<<BIGREEN<<"Generando grafica..."<<RESET<<std::endl;
+
+  fichero.close();
   system("../graficaSeleccion.sh");
   int valorAprox;
   do{
@@ -169,11 +168,11 @@ void metodoSeleccion(){
 
      if(valorAprox<0) std::cout<<"Tamaño no valido"<<std::endl;
     }while(valorAprox!=0);
-   
 
-  fichero.close();
+
+
 }
-  
+
 
 
 
@@ -187,7 +186,7 @@ std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vec
 
    minimosCuadradosTerminosInd.resize(n);
    for(int i=0;i<n;i++) minimosCuadradosTerminosInd[i].resize(1,0);
-   
+
    for(int i=0;i<n;i++)
          minimosCuadradosTerminosInd[i][0]=sumatorioMultValores(tamanyo,tiempo,i);
 
@@ -205,7 +204,7 @@ std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vec
 double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiempo,double n){
     assert(tiempo.size()==tamanyo.size());
     double aux=0;
-   
+
     for(unsigned int i=0;i<tiempo.size();i++)
         aux+=(tiempo[i]*pow(tamanyo[i],n));
 
@@ -232,7 +231,7 @@ double desviacionTipica(std::vector<double> v){
     double medias=media(v);
     double aux=0;
     for(unsigned int i=0;i<v.size();i++)
-        aux+=pow(v[i]-medias,2); 
+        aux+=pow(v[i]-medias,2);
     aux=aux/v.size();
     aux=sqrt(aux);
     return aux;
@@ -241,15 +240,15 @@ double desviacionTipica(std::vector<double> v){
 
 
 double varianza(std::vector<double> v){
-   
+
     double medias=media(v);
-    
-   
+
+
     double aux=0;
 
     for(unsigned int i=0;i<v.size();i++)
-        aux+=(pow(v[i]-medias,2)/v.size()); 
- 
+        aux+=(pow(v[i]-medias,2)/v.size());
+
     aux=aux-pow(medias,2);
 
     return aux;
@@ -272,7 +271,7 @@ double covarianza(std::vector<double> v1,std::vector<double> v2){
 
 
 double determinacion(std::vector<double> aprox,std::vector<double> tiempo){
-     
+
     double varianzaAprox=varianza(aprox);
     double varianzaTiempo=varianza(tiempo);
 
@@ -290,12 +289,12 @@ double determinacion(std::vector<double> aprox,std::vector<double> tiempo){
 std::vector < std::vector< double> > calcularMinimosCuadrados(std::vector<double> tamanyo,int n){
    std::vector< std::vector< double> > minimosCuadrados;
    minimosCuadrados.resize(n);
-   for(int i=0;i<n;i++)     minimosCuadrados[i].resize(n,0);  
-   
+   for(int i=0;i<n;i++)     minimosCuadrados[i].resize(n,0);
+
 
    for(double i=0;i<n;i++){
       for(double j=0;j<n;j++){
-          minimosCuadrados[i][j]=minimosCuadrados[j][i]=sumaVector(tamanyo,j+i);        
+          minimosCuadrados[i][j]=minimosCuadrados[j][i]=sumaVector(tamanyo,j+i);
       }
    }
 
@@ -327,7 +326,7 @@ double sumaVector(std::vector<double> vector,double exponente){
 
 
 bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
-  if(inicio<=0){ 
+  if(inicio<=0){
           std::cout<<"Datos de inicio no permitido"<<std::endl;
           return false;
          }
@@ -337,7 +336,7 @@ bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
           return false;
          }
 
-  if(subida<=0){ 
+  if(subida<=0){
           std::cout<<"Datos de aumento no permitido"<<std::endl;
           return false;
          }
@@ -357,23 +356,23 @@ bool evaluarDatos(int inicio,int fin,int subida,int repeticiones){
 
 
 
-void metodoMonticulos(){ 
+void metodoMonticulos(){
   Vector v;
    Clock time;
    int inicio,fin,subida,repeticiones;
-      
+
    std::ofstream fichero;
    fichero.open("Heapsort.txt");
-   
+
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;
-   
+
    std::cout<<"Introduce cantidad de datos final:";
    std::cin>>fin;
 
-   std::cout<<"Introduce aumento por repeticion:";  
+   std::cout<<"Introduce aumento por repeticion:";
    std::cin>>subida;
-   
+
    std::cout<<"Introduce numero de repeticiones por cantidad:";
    std::cin>>repeticiones;
 
@@ -382,7 +381,7 @@ void metodoMonticulos(){
        std::cin.ignore();
        return;
       }
-   
+
    std::vector<double> tiempo(((fin-inicio)/subida)+1);
    std::vector<double> tamanyo(((fin-inicio)/subida)+1);
    int i=0;
@@ -402,19 +401,19 @@ void metodoMonticulos(){
           time.stop();
           tiempoPasado+=time.elapsed();
          }
-      }     
-     tiempo[i]=tiempoPasado/repeticiones;             
+      }
+     tiempo[i]=tiempoPasado/repeticiones;
      inicio=inicio+subida;
      i++;
    }
   std::vector<double> tamanyoLog=tamanyo;
-  
+
   for(unsigned int i=0;i<tamanyoLog.size();i++)
             tamanyoLog[i]=z(tamanyoLog[i]);
- 
+
   std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadrados(tamanyoLog,2);
   std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyoLog,tiempo,2);
-  
+
 
   std::vector< std::vector< double> > soluciones;
   soluciones.resize(2);
@@ -432,14 +431,12 @@ void metodoMonticulos(){
 
   std::cout<<"\nFunción de minimos cuadrados: "<<soluciones[1][0]<<"XlogX+"<<soluciones[0][0]<<std::endl;
   std::cout<<"\nEl coeficiente de determinacion es "<<determinacion(tiempo,aprox)<<std::endl;
-  std::cin.ignore();
-  std::cin.ignore();
   //Ahora imprimo el resultado final
   for(unsigned int i=0;i<tamanyo.size();i++){
-      
+
       fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
-  system("mv -f Heapsort.txt ..");
+  fichero.close();
   system("../graficaHeapsort.sh");
 
 
@@ -460,8 +457,8 @@ int valorAprox;
 
      if(valorAprox<0) std::cout<<"Tamaño no valido"<<std::endl;
     }while(valorAprox!=0);
-   
-fichero.close();
+
+
 }
 
 

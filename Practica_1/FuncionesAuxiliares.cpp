@@ -75,7 +75,7 @@ void metodoSeleccion(){
    for(int i=0;i<3;i++)     minimosCuadrados[i].resize(3,0);
 
    std::ofstream fichero;
-   fichero.open("Seleccion.txt");
+   fichero.open("./../images/Seleccion.txt");
 
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;
@@ -150,7 +150,7 @@ void metodoSeleccion(){
   std::cout<<BIGREEN<<"Generando grafica..."<<RESET<<std::endl;
 
   fichero.close();
-  system("../graficaSeleccion.sh");
+  system("../images/graficaSeleccion.sh");
   int valorAprox;
   do{
     std::cout<<BIBLUE<<"Introduce un tamaño para aproximar su tiempo o 0 en caso de querer acabar: "<<RESET;
@@ -362,7 +362,7 @@ void metodoMonticulos(){
    int inicio,fin,subida,repeticiones;
 
    std::ofstream fichero;
-   fichero.open("Heapsort.txt");
+   fichero.open("./../images/Heapsort.txt");
 
    std::cout<<"Introduce cantidad de datos inicial:";
    std::cin>>inicio;
@@ -437,7 +437,7 @@ void metodoMonticulos(){
       fichero<<tamanyo[i]<<" "<<tiempo[i]<<" "<<aprox[i]<<"\n";
    }
   fichero.close();
-  system("../graficaHeapsort.sh");
+  system("./../images/graficaHeapsort.sh");
 
 
 int valorAprox;

@@ -1,11 +1,32 @@
 #include <vector>
 #include "MinimosCuadrados.hpp"
-#include <fstream>
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
+#include "sistemaEcuaciones.hpp"
 
-std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vector<double> tamanyo,std::vector<double>tiempo,int n){
+
+std::vector< std::vector< double> > calcularMinimosCuadrados(const std::vector<double> &tamanyo,const std::vector<double> &tiempo,int n){
+
+  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadradosTerminosDep(tamanyo ,n);
+  std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,n);
+
+
+  std::vector< std::vector< double> > soluciones;
+  soluciones.resize(n);
+   for(int i=0;i<n;i++)     soluciones[i].resize(1,0);
+
+  resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, n, soluciones);
+
+  return soluciones;
+
+
+
+}
+
+
+
+std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(const std::vector<double> &tamanyo,const std::vector<double> &tiempo,int n){
    std::vector< std::vector< double> > minimosCuadradosTerminosInd;
 
    minimosCuadradosTerminosInd.resize(n);
@@ -25,7 +46,7 @@ std::vector< std::vector< double> > calcularMinimosCuadradosTerminosInd(std::vec
 
 
 
-double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiempo,double n){
+double sumatorioMultValores(const std::vector<double> &tamanyo,const std::vector<double> &tiempo,double n){
     assert(tiempo.size()==tamanyo.size());
     double aux=0;
 
@@ -39,7 +60,7 @@ double sumatorioMultValores(std::vector<double> tamanyo,std::vector<double> tiem
 }
 
 
-double media(std::vector<double> v){
+double media(const std::vector<double> &v){
    double media=0;
    for(unsigned int i=0;i<v.size();i++){
      media+=v[i];
@@ -51,7 +72,7 @@ double media(std::vector<double> v){
 
 
 
-double desviacionTipica(std::vector<double> v){
+double desviacionTipica(const std::vector<double> &v){
     double medias=media(v);
     double aux=0;
     for(unsigned int i=0;i<v.size();i++)
@@ -63,7 +84,7 @@ double desviacionTipica(std::vector<double> v){
 
 
 
-double varianza(std::vector<double> v){
+double varianza(const std::vector<double> &v){
 
     double medias=media(v);
 
@@ -81,7 +102,7 @@ double varianza(std::vector<double> v){
 
 
 
-double covarianza(std::vector<double> v1,std::vector<double> v2){
+double covarianza(const std::vector<double> &v1, const std::vector<double> &v2){
     double mediaV1=media(v1);
     double mediaV2=media(v2);
     double sumV1V2=sumatorioMultValores(v1,v2,1);
@@ -94,7 +115,7 @@ double covarianza(std::vector<double> v1,std::vector<double> v2){
 
 
 
-double determinacion(std::vector<double> aprox,std::vector<double> tiempo){
+double determinacion(const std::vector<double> &aprox,const std::vector<double> &tiempo){
 
     double varianzaAprox=varianza(aprox);
     double varianzaTiempo=varianza(tiempo);
@@ -110,7 +131,7 @@ double determinacion(std::vector<double> aprox,std::vector<double> tiempo){
 
 
 
-std::vector < std::vector< double> > calcularMinimosCuadrados(std::vector<double> tamanyo,int n){
+std::vector < std::vector< double> > calcularMinimosCuadradosTerminosDep(const std::vector<double> &tamanyo,int n){
    std::vector< std::vector< double> > minimosCuadrados;
    minimosCuadrados.resize(n);
    for(int i=0;i<n;i++)     minimosCuadrados[i].resize(n,0);
@@ -135,7 +156,7 @@ std::vector < std::vector< double> > calcularMinimosCuadrados(std::vector<double
 
 
 
-double sumaVector(std::vector<double> vector,double exponente){
+double sumaVector(const std::vector<double> &vector,double exponente){
      double aux=0;
       for(unsigned int i=0;i<vector.size();i++) aux+=pow(vector[i],exponente);
      return aux;
@@ -143,12 +164,13 @@ double sumaVector(std::vector<double> vector,double exponente){
 
 
 
-double calcularValorAprox(int valorAprox,std::vector < std::vector <double> > soluciones,double n){
+double calcularValorAprox(int valorAprox,const std::vector < std::vector <double> > &soluciones,int n){
     if(valorAprox>0){
          double valor=0;
          for(int i=0;i<n;i++){
-           valor+=soluciones[n][0]*pow(valorAprox,i);
-         }  
+           valor+=soluciones[i][0]*pow(valorAprox,i);
+         }
+        return valor;  
      }
-   return valor;
+    else return -1;
 }

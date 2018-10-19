@@ -81,12 +81,11 @@ void numerosCombinatorios(){
             time.start();
 
            combinatorioRecursivo(i,j);
-         if (time.isStarted())
-	  {
+         if (time.isStarted()){
           time.stop();
           tiempoPasado+=time.elapsed();
          }
-      }
+       }
      tiempo_recursivo_sin_lista[i-1]=tiempoPasado;
     
     }
@@ -95,9 +94,9 @@ void numerosCombinatorios(){
   std::ofstream file;
   file.open("combinatorioRecursivoSinLista.txt");
   for(int i=0;i<n;i++) 
-     file<<muestra_recursivo_sin_lista[i]<<" "<<tiempo_recursivo_sin_lista[i]<<" "<<calcularValorAprox((int)muestra_recursivo_sin_lista[i],sol,3)<<std::endl;
-
- 
+     file<<muestra_recursivo_sin_lista[i]<<" "<<tiempo_recursivo_sin_lista[i]<<" "<<calcularValorAprox(muestra_recursivo_sin_lista[i],sol,3)<<std::endl;
+  file.close();
+  for (int i=0;i<muestra_recursivo_sin_lista.size();i++)std::cout<<muestra_recursivo_sin_lista[i]<<std::endl;
 
 }
 

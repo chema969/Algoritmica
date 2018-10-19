@@ -8,16 +8,20 @@
 
 std::vector< std::vector< double> > calcularMinimosCuadrados(const std::vector<double> &tamanyo,const std::vector<double> &tiempo,int n){
 
-  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadradosTerminosDep(tamanyo ,n);
+  std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadradosCoef(tamanyo ,n);
   std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,n);
+  for(int i=0;i<matrizDeTerminosIndependientes.size();i++){ 
+       for(int j=0;j<matrizDeTerminosIndependientes[i].size();j++){
+          std::cout<<matrizDeTerminosIndependientes[i][j]<<" ";
+         }
+      std::cout<<std::endl;
+   }
 
+  std::vector< std::vector< double> > soluciones(n, std::vector<double>(1,0));
 
-  std::vector< std::vector< double> > soluciones;
-  soluciones.resize(n);
-   for(int i=0;i<n;i++)     soluciones[i].resize(1,0);
 
   resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, n, soluciones);
-
+  for(int i=0;i<n;i++) std::cout<<soluciones[i][0]<<std::endl;
   return soluciones;
 
 
@@ -131,10 +135,9 @@ double determinacion(const std::vector<double> &aprox,const std::vector<double> 
 
 
 
-std::vector < std::vector< double> > calcularMinimosCuadradosTerminosDep(const std::vector<double> &tamanyo,int n){
-   std::vector< std::vector< double> > minimosCuadrados;
-   minimosCuadrados.resize(n);
-   for(int i=0;i<n;i++)     minimosCuadrados[i].resize(n,0);
+std::vector < std::vector< double> > calcularMinimosCuadradosCoef(const std::vector<double> &tamanyo,int n){
+   std::vector< std::vector< double> > minimosCuadrados(n, std::vector<double>(n,0));
+
 
 
    for(double i=0;i<n;i++){
@@ -164,12 +167,13 @@ double sumaVector(const std::vector<double> &vector,double exponente){
 
 
 
-double calcularValorAprox(int valorAprox,const std::vector < std::vector <double> > &soluciones,int n){
+double calcularValorAprox(double valorAprox,const std::vector < std::vector <double> > &soluciones,int n){
     if(valorAprox>0){
          double valor=0;
          for(int i=0;i<n;i++){
            valor+=soluciones[i][0]*pow(valorAprox,i);
          }
+	// valor=0 + 1*n +2*n²
         return valor;  
      }
     else return -1;

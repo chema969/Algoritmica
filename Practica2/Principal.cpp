@@ -19,7 +19,7 @@ int main(){
             break;
 
          case 2:
-            hanoi();
+            realizarHanoi();
             break;        
 
          default:

@@ -10,18 +10,13 @@ std::vector< std::vector< double> > calcularMinimosCuadrados(const std::vector<d
 
   std::vector< std::vector< double> > matrizDeCoeficientes= calcularMinimosCuadradosCoef(tamanyo ,n);
   std::vector< std::vector< double> > matrizDeTerminosIndependientes= calcularMinimosCuadradosTerminosInd(tamanyo,tiempo,n);
-  for(int i=0;i<matrizDeTerminosIndependientes.size();i++){ 
-       for(int j=0;j<matrizDeTerminosIndependientes[i].size();j++){
-          std::cout<<matrizDeTerminosIndependientes[i][j]<<" ";
-         }
-      std::cout<<std::endl;
-   }
+
 
   std::vector< std::vector< double> > soluciones(n, std::vector<double>(1,0));
 
 
   resolverSistemaEcuaciones(matrizDeCoeficientes, matrizDeTerminosIndependientes, n, soluciones);
-  for(int i=0;i<n;i++) std::cout<<soluciones[i][0]<<std::endl;
+
   return soluciones;
 
 
@@ -96,9 +91,9 @@ double varianza(const std::vector<double> &v){
     double aux=0;
 
     for(unsigned int i=0;i<v.size();i++)
-        aux+=(pow(v[i]-medias,2)/v.size());
+        aux+=(pow(v[i]-medias,2));
 
-    aux=aux-pow(medias,2);
+    aux=aux/v.size();
 
     return aux;
    }

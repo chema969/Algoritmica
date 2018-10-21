@@ -1,20 +1,35 @@
 #ifndef FUNCIONES_AUXILIARES_HPP
 #define FUNCIONES_AUXILIARES_HPP
-
+#include <vector>
+#include <stack>
 int menu();
 
-long unsigned int combinatorioRecursivo(long unsigned int n, long unsigned int k);
+
+long double combinatorioRecursivo(long double n, long double k);
 
 
-long unsigned int combinatorioIterativo(long unsigned int n,long unsigned int k);
+long double combinatorioIterativo(long double n,long double k);
 
 
 void numerosCombinatorios();
 
 
+void numerosCombinatoriosRecursivosSinTabla();
 
-void hanoi();
 
+void numerosCombinatoriosRecursivosConTabla();
+
+
+void numerosCombinatoriosIterativos();
+
+
+long double combinatorioRecursivoConTabla(long double n, long double k,std::vector < std::vector< long double> > &tabla);
+
+
+void hanoi(std::vector<std::stack <int> > &varillas,int nDiscos,int i,int j,int &movimientos);
+
+
+void realizarHanoi();
 
 
 #endif

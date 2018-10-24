@@ -26,10 +26,12 @@ void numerosCombinatoriosIterativos();
 long double combinatorioRecursivoConTabla(long double n, long double k,std::vector < std::vector< long double> > &tabla);
 
 
-void hanoi(std::vector<std::stack <int> > &varillas,int nDiscos,int i,int j,int &movimientos);
+void hanoi(std::vector<std::vector <int>  > &varillas,int nDiscos,int i,int j,int &movimientos);
 
 
 void realizarHanoi();
 
+
+void imprimir(const std::vector<std::vector <int>  > &varillas);
 
 #endif

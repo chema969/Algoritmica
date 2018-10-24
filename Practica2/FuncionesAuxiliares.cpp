@@ -366,31 +366,99 @@ long double combinatorioIterativo(long double n,long  double k){
 
 void realizarHanoi(){
    Clock time;
-  int n;
+  int n,k=0;
   
-  std::cout<<"Introduce el valor de n(mayor que 3):";
+  std::cout<<"Introduce el valor de n:";
 
   std::cin>>n;
-  if(n<3) return;
-    for(int i=3;i<=n;i++){
+
+ std::vector<double> tiempo;
+  tiempo.resize(n,0);
+
+  std::vector<double> muestra;
+
+  muestra.resize(n,0);
+  double tiempoPasado=0;
+ 
+  if(n<1) return;
+  for(int i=1;i<=n;i++){
+       muestra[k]=i;
        int movimientos=0;
-       std::vector<std::stack <int> > varillas(3);
-       for(int j=i;j>0;j--) varillas[0].push(j);
+       tiempoPasado=0;
+       std::vector<std::vector <int> > varillas(3);
+       for(int j=i;j>0;j--) varillas[0].push_back(j);
+       std::cout<<"SOLUCION DE HANOI PARA "<<i<<" ELEMENTOS\n";
+       imprimir(varillas);
        time.start();
        hanoi(varillas,i,1,2,movimientos);
        if (time.isStarted()){
-          time.stop();}
-       std::cout<<movimientos<<std::endl; 
+          time.stop();
+          tiempoPasado+=time.elapsed();
+              }
+      tiempo[k]=tiempoPasado;
+      k++;
+   }
+
+  std::vector<double> muestra2(n,0);
+  std::vector<double> tiempo_estimado(n,0);
+
+   for(int i=0;i<n;i++) muestra2[i]=pow(2,muestra[i]);
+  std::vector<std::vector<double> > sol=calcularMinimosCuadrados(muestra2, tiempo,2);
+ 
+  std::ofstream file;
+  file.open("hanoi.txt");
+  for(int i=0;i<tiempo.size();i++){ 
+     tiempo_estimado[i]=sol[0][0]+(sol[1][0]*pow(2,muestra[i]));
+     file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;
      }
+  file.close();
+
+  std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl;
+  std::cin.ignore();
+  system("../graficaHanoi.sh");
+
+  double valor=1;
+  while(valor!=0){
+    std::cout<<"\nIntroduce valor para estimar(n=0,salir):";
+    std::cin>>valor;
+    long double anyos=(sol[0][0]+(sol[1][0]*pow(2,valor)))/(3,1536*pow(10,13));
+    std::cout<<"La estimacion del tiempo para ese valor es "<<anyos<<" en años"<<std::endl;
+   }
+
 
 }
 
 
 
-void hanoi(std::vector<std::stack <int> > &varillas,int nDiscos,int i,int j,int &movimientos){ 
+void hanoi(std::vector<std::vector <int>  > &varillas,int nDiscos,int i,int j,int &movimientos){ 
      if(nDiscos>0){
          hanoi(varillas,nDiscos-1,i,6-i-j,movimientos);  
-         varillas[j].push(varillas[i].top());varillas[i].pop();movimientos++;
+         varillas[j-1].push_back(varillas[i-1].back());varillas[i-1].resize(varillas[i-1].size()-1);movimientos++;
+         imprimir(varillas);
          hanoi(varillas,nDiscos-1,6-i-j,j,movimientos); 
      }
+}
+
+
+
+void imprimir(const std::vector<std::vector <int>  > &varillas){
+   std::string a_imprimir;
+   int n=0; for(int i=0;i<varillas.size();i++) n+=varillas[i].size();
+   a_imprimir+="            |                        |                        |            \n";
+   for(int i=n;i>=0;i--){
+     for(int j=0;j<varillas.size();j++){
+          if(varillas[j].size()>i){
+               for (int k=0;k<12-varillas[j][i];k++)a_imprimir+=" ";
+               for (int k=0;k<varillas[j][i]*2+1;k++)a_imprimir+="-"; 
+               for (int k=0;k<12-varillas[j][i];k++)a_imprimir+=" ";
+          }
+          else a_imprimir+="            |            ";
+     }
+    a_imprimir+="\n            |                        |                        |            \n";
+   }
+  a_imprimir+="---------------------------------------------------------------------------\n\n";
+   std::cout<<a_imprimir;   
+  
+      
+   
 }

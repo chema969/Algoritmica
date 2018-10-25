@@ -71,7 +71,7 @@ void numerosCombinatorios(){
 
 	PLACE(1,10);
 	std::cout << BIBLUE;
-	std::cout << "Programa principial | Opciones del menú";
+	std::cout << "Numeros combinatorios | Opciones del menú";
 	std::cout << RESET;
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,71 @@ void numerosCombinatorios(){
 }
 
 
+void opcionesHanoi(){
+	int opcion;
+	int posicion;
 
+	// Se muestran las opciones del menú
+	posicion=2;
+
+	// Se borra la pantalla
+	std::cout << CLEAR_SCREEN;
+
+	PLACE(1,10);
+	std::cout << BIBLUE;
+	std::cout << "Hanoi | Opciones del menú";
+	std::cout << RESET;
+
+	//////////////////////////////////////////////////////////////////////////////
+	posicion++;
+
+	PLACE(posicion++,10);
+	std::cout <<  "[1] Calcular hanoi sin mostrar por pantalla";
+
+	//////////////////////////////////////////////////////////////////////////////
+	posicion++;
+
+	PLACE(posicion++,10);
+	std::cout << "[2] Calcular hanoi mostrando por pantalla";
+
+	posicion++;
+
+
+	PLACE(posicion++,10);
+	std::cout << BIRED << "[0] Volver al menu principal";
+	//////////////////////////////////////////////////////////////////////////////
+	posicion++;
+
+	PLACE(posicion++,10);
+	std::cout << BIGREEN;
+	std::cout << "Opción: ";
+	std::cout << RESET;
+
+	// Se lee el número de opción
+	std::cin >> opcion;
+
+    // Se elimina el salto de línea del flujo de entrada
+    std::cin.ignore();
+      switch(opcion){
+         case 0:
+            std::cout<<"Saliendo del programa"<<std::endl;
+            break;
+ 
+         case 1: 
+            realizarHanoi(); 
+            break;
+
+         case 2:
+            realizarHanoiImprimiendo();
+            break;        
+ 
+
+         default:
+            std::cout<<"Opcion incorrecta"<<std::endl;
+         
+      }
+	
+}
 
 void numerosCombinatoriosRecursivosSinTabla(){ 
 
@@ -184,6 +248,8 @@ void numerosCombinatoriosRecursivosSinTabla(){
      file<<muestra_recursivo_sin_lista[i]<<" "<<tiempo_recursivo_sin_lista[i]<<" "<<tiempo_estimado[i]<<std::endl;
      }
   file.close();
+
+  std::cout<<"El polinomio de los minimos cuadrados es y="<<sol[0][0]<<"+2^("<<sol[1][0]<<"x)"<<std::endl;
   std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo_recursivo_sin_lista)<<std::endl;
   std::cin.ignore();
   system("../graficaRecursivaSinTabla.sh");
@@ -193,6 +259,7 @@ void numerosCombinatoriosRecursivosSinTabla(){
     std::cout<<"\nIntroduce valor para estimar(n=0,salir):";
     std::cin>>valor;
     long double anyos=(sol[0][0]+(sol[1][0]*pow(2,valor)))/(3,1536*pow(10,13));
+    //notacion_tiempos(anyos);
     std::cout<<"La estimacion del tiempo para ese valor es "<<anyos<<" en años"<<std::endl;
    }
 
@@ -259,6 +326,7 @@ void numerosCombinatoriosRecursivosConTabla(){
      file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;
      }
   file.close();
+
   std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl;
   system("../graficaRecursivaConTabla.sh");
 
@@ -333,6 +401,7 @@ void numerosCombinatoriosIterativos(){
   file.close();
  
   system("../graficaIterativo.sh");
+    std::cout<<"\nFunción de minimos cuadrados: "<<sol[2][0]<<"X^2+"<<sol[1][0]<<"X+"<<sol[0][0]<<std::endl;
   std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl; 
 
  double valor=1;
@@ -342,6 +411,7 @@ void numerosCombinatoriosIterativos(){
     std::cout<<"La estimacion del tiempo para ese valor es "<<calcularValorAprox(valor,sol,3)<<" en mcs"<<std::endl;
    }
 }
+
 
 
 
@@ -364,6 +434,26 @@ long double combinatorioIterativo(long double n,long  double k){
 
 
 
+
+void realizarHanoiImprimiendo(){
+   Clock time;
+  int n,k=0;
+  
+  std::cout<<"Introduce el valor de n:";
+
+  std::cin>>n;
+  std::cin.ignore();
+ 
+  if(n<1) return;
+       int movimientos=0;
+       std::vector<std::vector <int> > varillas(3);
+       for(int j=n;j>0;j--) varillas[0].push_back(j);
+       std::cout<<"SOLUCION DE HANOI PARA "<<n<<" ELEMENTOS\n";
+       imprimir(varillas,0);
+       hanoi(varillas,n,1,2,movimientos);
+       std::cout<<"El numero de movimientos es "<<movimientos<<std::endl;
+}
+
 void realizarHanoi(){
    Clock time;
   int n,k=0;
@@ -385,12 +475,11 @@ void realizarHanoi(){
        muestra[k]=i;
        int movimientos=0;
        tiempoPasado=0;
-       std::vector<std::vector <int> > varillas(3);
-       for(int j=i;j>0;j--) varillas[0].push_back(j);
-       std::cout<<"SOLUCION DE HANOI PARA "<<i<<" ELEMENTOS\n";
-       imprimir(varillas);
+       std::vector<std::stack <int> > varillas(3);
+       for(int j=i;j>0;j--) varillas[0].push(j);
+
        time.start();
-       hanoi(varillas,i,1,2,movimientos);
+       hanoiSinImprimir(varillas,i,1,2,movimientos);
        if (time.isStarted()){
           time.stop();
           tiempoPasado+=time.elapsed();
@@ -412,9 +501,8 @@ void realizarHanoi(){
      file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;
      }
   file.close();
-
+  std::cout<<"El polinomio de los minimos cuadrados es y="<<sol[0][0]<<"+2^("<<sol[1][0]<<"x)"<<std::endl;
   std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl;
-  std::cin.ignore();
   system("../graficaHanoi.sh");
 
   double valor=1;
@@ -429,19 +517,27 @@ void realizarHanoi(){
 }
 
 
+void hanoiSinImprimir(std::vector<std::stack <int>  > &varillas,int nDiscos,int i,int j,int &movimientos){
+ if(nDiscos>0){
+         hanoiSinImprimir(varillas,nDiscos-1,i,6-i-j,movimientos);  
+          varillas[j-1].push(varillas[i-1].top());varillas[i-1].pop();movimientos++;
+         hanoiSinImprimir(varillas,nDiscos-1,6-i-j,j,movimientos); 
+     }
+}
 
 void hanoi(std::vector<std::vector <int>  > &varillas,int nDiscos,int i,int j,int &movimientos){ 
      if(nDiscos>0){
          hanoi(varillas,nDiscos-1,i,6-i-j,movimientos);  
          varillas[j-1].push_back(varillas[i-1].back());varillas[i-1].resize(varillas[i-1].size()-1);movimientos++;
-         imprimir(varillas);
+         imprimir(varillas,movimientos);
          hanoi(varillas,nDiscos-1,6-i-j,j,movimientos); 
      }
 }
 
 
 
-void imprimir(const std::vector<std::vector <int>  > &varillas){
+void imprimir(const std::vector<std::vector <int>  > &varillas,int movimientos){
+   std::cout<<"                                  Movimiento "<<movimientos<<std::endl;
    std::string a_imprimir;
    int n=0; for(int i=0;i<varillas.size();i++) n+=varillas[i].size();
    a_imprimir+="            |                        |                        |            \n";
@@ -458,7 +554,7 @@ void imprimir(const std::vector<std::vector <int>  > &varillas){
    }
   a_imprimir+="---------------------------------------------------------------------------\n\n";
    std::cout<<a_imprimir;   
-  
+  std::cin.ignore();
       
    
 }

@@ -14,6 +14,9 @@ long double combinatorioIterativo(long double n,long double k);
 void numerosCombinatorios();
 
 
+void opcionesHanoi();
+
+
 void numerosCombinatoriosRecursivosSinTabla();
 
 
@@ -32,6 +35,12 @@ void hanoi(std::vector<std::vector <int>  > &varillas,int nDiscos,int i,int j,in
 void realizarHanoi();
 
 
-void imprimir(const std::vector<std::vector <int>  > &varillas);
+void realizarHanoiImprimiendo();
+
+
+void hanoiSinImprimir(std::vector<std::stack <int>  > &varillas,int nDiscos,int i,int j,int &movimientos);
+
+
+void imprimir(const std::vector<std::vector <int>  > &varillas,int movimientos);
 
 #endif

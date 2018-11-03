@@ -2,22 +2,25 @@
 #define ENTERO_HPP
 #include <string>
 #include <cassert>
+#include <iostream>
 
+ bool isInteger(const std::string & s);
 class Entero{
   private:
     std::string entero_;
-    bool isInteger(const std::string & s);
+    int mayorMagnitud(const Entero &v){ 
+                      if(v.getEntero().length()>=entero_.length())return v.getEntero().length();
+                      else return entero_.length();}
   public:
     Entero(const std::string &entero){
-         assert(isInterter(entero))
-         entero_=entero;
+         setEntero(entero);
        }
 
     void setEntero(const std::string &entero){
-                                          assert(isInterter(entero))
+                                          assert(isInteger(entero));
                                           entero_=entero;}
 
-    std::string getEntero(){return entero_;}
+    std::string getEntero()const{return entero_;}
 
     void partirCadena(std::string &c1, std::string &c2);
 
@@ -29,7 +32,15 @@ class Entero{
 
     void multiplicarPotencia10(int potencia);
 
-    friend ostream &operator<<(ostream &salida,const Entero &d);
+    friend std::ostream &operator<<(std::ostream &salida,const Entero &d);
+
+    friend std::istream &operator>>(std::istream &salida, Entero &d);
+
+    Entero operator+(Entero &e);
+
+    Entero operator*(Entero &e);
+ 
+    void operator=(const Entero &e){ this->entero_=e.entero_;}
   };
 
 

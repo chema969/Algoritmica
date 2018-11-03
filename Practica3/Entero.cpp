@@ -1,9 +1,10 @@
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include "Entero.hpp"
 
 
- bool Entero::isInteger(const std::string & s)
+ bool isInteger(const std::string & s)
 {
    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
 
@@ -12,6 +13,8 @@
 
    return (*p == 0) ;
 }
+
+
 
 
 void Entero::partirCadena( std::string &c1, std::string &c2)
@@ -59,16 +62,132 @@ void Entero::quitarCerosNoSignificativos()
 		numeroCeros++;
 	}
         entero_=entero_.substr(numeroCeros);
+        if(entero_=="") entero_="0";
+
 }
            
 void Entero::multiplicarPotencia10(int potencia)
 {
-	agregarCerosFinal(aux, potencia);
+	agregarCerosFinal(potencia);
 }	
 
 
-ostream &operator<<(ostream &salida,const Entero &d){
+std::ostream &operator<<(std::ostream &salida,const Entero &d){
    salida<<d.getEntero();
    return salida;
  }
 
+std::istream &operator>>(std::istream &salida, Entero &d){
+  std::string i;
+   salida>>i;
+   d.setEntero(i);
+   return salida;
+ }
+
+Entero Entero::operator+( Entero &e){
+       std::string suma;
+       std::string::reverse_iterator j;
+       std::string::reverse_iterator i;
+       int acarreo=0;
+       for(i=e.entero_.rbegin(),j=this->entero_.rbegin();(i!=e.entero_.rend())&&(j!=this->entero_.rend());i++,j++){
+        int x = *i - '0';
+	int y = *j - '0';
+	
+	int aux = x + y + acarreo;
+	
+	std::string aux2;
+	if (aux < 10)
+	{
+		aux2 = '0' + aux;
+                acarreo=0;
+	}
+	else
+	{
+		aux2 = '0' + aux % 10;
+		acarreo = aux/10;
+	}
+        suma= aux2+suma;
+       }
+    
+       while(i!=e.entero_.rend()){
+          int aux;
+          if(acarreo!=0){
+            aux = (*i - '0') + acarreo;
+            if (aux < 10) acarreo=0;
+            else
+	        {
+		acarreo = aux/10;
+	        aux=aux%10;
+                 }
+            
+          }
+          else
+            suma=*i+suma;
+          i++;
+          }
+         while(j!=this->entero_.rend()){
+          int aux;
+          if(acarreo!=0){
+            aux = (*j - '0') + acarreo;
+            if (aux < 10) acarreo=0;
+            else
+	        {
+		acarreo = aux/10;
+	        aux=aux%10; 
+                 }
+              std::string aux2;
+              aux2='0'+aux;
+             suma=aux2+suma ;   
+          }
+          else
+            suma=*j+suma;
+          j++;
+          }
+       return Entero(suma);
+}
+
+
+
+
+
+
+
+Entero Entero::operator*( Entero &e){
+    int n=this->mayorMagnitud(e);
+    if(n<=4) 
+       return Entero(std::to_string(std::stoi(e.entero_)*std::stoi(this->entero_)));
+    if((this->entero_=="0")||(e.entero_=="0")) return Entero("0");
+    
+    if(n>this->entero_.length())   
+         this->agregarCerosDelante(n-this->entero_.length());
+    if(n>e.entero_.length())    
+         e.agregarCerosDelante(n-e.entero_.length());
+    //std::cout<<this->entero_<<"*"<<e.entero_<<std::endl;
+    std::string w , x , y , z;
+    this->partirCadena(w,x);
+    e.partirCadena(y,z);
+    Entero W(w);
+    Entero X(x);
+    Entero Y(y); 
+    Entero Z(z);
+    //std::cout<<"W="<<W<<",X="<<X<<",Y="<<Y<<",Z="<<Z<<std::endl;
+
+    W.quitarCerosNoSignificativos(); X.quitarCerosNoSignificativos(); Y.quitarCerosNoSignificativos(); Z.quitarCerosNoSignificativos();
+    
+    Entero aux2("1");
+    aux2.multiplicarPotencia10(n/2);
+
+    Entero a= (W*Y);
+   // std::cout<<a<<std::endl;
+    a.multiplicarPotencia10(n);
+    Entero b=W*Z;
+    Entero c=X*Y;
+    c=b+c;
+    c.multiplicarPotencia10(n/2);
+    Entero d=X*Z;
+    //std::cout<<"a="<<a<<",b="<<b<<",c="<<c<<",d="<<d<<std::endl;
+    Entero bb=a+c+d;
+    //std::cout<<"a="<<a<<std::endl;
+    bb.quitarCerosNoSignificativos();e.quitarCerosNoSignificativos();this->quitarCerosNoSignificativos();
+    return bb;
+   }

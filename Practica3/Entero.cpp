@@ -143,6 +143,11 @@ Entero Entero::operator+( Entero &e){
             suma=*j+suma;
           j++;
           }
+       if(acarreo>0){
+         std::string aux2;
+         aux2='0'+acarreo;
+         suma=aux2+suma;
+       }
        return Entero(suma);
 }
 
@@ -162,7 +167,11 @@ Entero Entero::operator*( Entero &e){
          this->agregarCerosDelante(n-this->entero_.length());
     if(n>e.entero_.length())    
          e.agregarCerosDelante(n-e.entero_.length());
-    //std::cout<<this->entero_<<"*"<<e.entero_<<std::endl;
+
+    int s=n/2;
+
+
+
     std::string w , x , y , z;
     this->partirCadena(w,x);
     e.partirCadena(y,z);
@@ -170,24 +179,19 @@ Entero Entero::operator*( Entero &e){
     Entero X(x);
     Entero Y(y); 
     Entero Z(z);
-    //std::cout<<"W="<<W<<",X="<<X<<",Y="<<Y<<",Z="<<Z<<std::endl;
+   
 
     W.quitarCerosNoSignificativos(); X.quitarCerosNoSignificativos(); Y.quitarCerosNoSignificativos(); Z.quitarCerosNoSignificativos();
-    
-    Entero aux2("1");
-    aux2.multiplicarPotencia10(n/2);
-
     Entero a= (W*Y);
-   // std::cout<<a<<std::endl;
-    a.multiplicarPotencia10(n);
+    a.multiplicarPotencia10(s*2);
+
     Entero b=W*Z;
     Entero c=X*Y;
-    c=b+c;
-    c.multiplicarPotencia10(n/2);
+    Entero f=b+c;
+    f.multiplicarPotencia10(s);
     Entero d=X*Z;
-    //std::cout<<"a="<<a<<",b="<<b<<",c="<<c<<",d="<<d<<std::endl;
-    Entero bb=a+c+d;
-    //std::cout<<"a="<<a<<std::endl;
+    Entero bb=a+f+d;
+  
     bb.quitarCerosNoSignificativos();e.quitarCerosNoSignificativos();this->quitarCerosNoSignificativos();
     return bb;
    }

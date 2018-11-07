@@ -107,9 +107,11 @@ Entero Entero::operator+( Entero &e){
 		acarreo = aux/10;
 	}
         suma= aux2+suma;
+        //std::cout<<x<<","<<y<<","<<acarreo<<","<<suma<<"\n";
        }
-    
+        //std::cout<<"acarreo="<<acarreo<<"\n";
        while(i!=e.entero_.rend()){
+          
           int aux;
           if(acarreo!=0){
             aux = (*i - '0') + acarreo;
@@ -119,6 +121,9 @@ Entero Entero::operator+( Entero &e){
 		acarreo = aux/10;
 	        aux=aux%10;
                  }
+              std::string aux2;
+              aux2='0'+aux;
+             suma=aux2+suma ; 
             
           }
           else
@@ -144,9 +149,8 @@ Entero Entero::operator+( Entero &e){
           j++;
           }
        if(acarreo>0){
-         std::string aux2;
-         aux2='0'+acarreo;
-         suma=aux2+suma;
+
+         suma=std::to_string(acarreo)+suma;
        }
        return Entero(suma);
 }
@@ -158,9 +162,25 @@ Entero Entero::operator+( Entero &e){
 
 
 Entero Entero::operator*( Entero &e){
+
+   bool negativeAvg=false;
+    if(this->negative){
+      negativeAvg=!(negativeAvg);
+      this->entero_= this->entero_.substr(1);  
+    }
+
+    if(e.negative){
+      negativeAvg=!(negativeAvg);
+      e.entero_= e.entero_.substr(1);  
+    }
+
     int n=this->mayorMagnitud(e);
-    if(n<=4) 
-       return Entero(std::to_string(std::stoi(e.entero_)*std::stoi(this->entero_)));
+    if(n<=this->getMax()) {
+       std::string retval=std::to_string(std::stoi(e.entero_)*std::stoi(this->entero_));
+       if(negativeAvg) retval="-"+retval;
+       return Entero(retval);
+      }
+
     if((this->entero_=="0")||(e.entero_=="0")) return Entero("0");
     
     if(n>this->entero_.length())   
@@ -170,28 +190,46 @@ Entero Entero::operator*( Entero &e){
 
     int s=n/2;
 
+ 
 
 
     std::string w , x , y , z;
     this->partirCadena(w,x);
     e.partirCadena(y,z);
-    Entero W(w);
-    Entero X(x);
-    Entero Y(y); 
-    Entero Z(z);
-   
+    Entero W(w,this->getMax());
+    Entero X(x,this->getMax());
+    Entero Y(y,this->getMax()); 
+    Entero Z(z,this->getMax());
+     
 
     W.quitarCerosNoSignificativos(); X.quitarCerosNoSignificativos(); Y.quitarCerosNoSignificativos(); Z.quitarCerosNoSignificativos();
+
     Entero a= (W*Y);
+    a.setMax(this->getMax());
     a.multiplicarPotencia10(s*2);
 
     Entero b=W*Z;
+    b.setMax(this->getMax());
     Entero c=X*Y;
+    c.setMax(this->getMax());
     Entero f=b+c;
     f.multiplicarPotencia10(s);
+    f.setMax(this->getMax());
     Entero d=X*Z;
+    d.setMax(this->getMax());
+
     Entero bb=a+f+d;
-  
+    bb.setMax(this->getMax());
     bb.quitarCerosNoSignificativos();e.quitarCerosNoSignificativos();this->quitarCerosNoSignificativos();
+
+    if(negativeAvg) 
+      bb.setEntero("-"+bb.getEntero());
+    
+    if(this->negative)
+      this->entero_= "-"+ this->entero_;  
+    
+    if(e.negative)
+     e.entero_= "-" + e.entero_;  
+
     return bb;
    }

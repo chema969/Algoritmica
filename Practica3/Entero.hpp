@@ -8,18 +8,23 @@
 class Entero{
   private:
     std::string entero_;
+    int max_;
+    bool negative;
     int mayorMagnitud(const Entero &v){ 
                       if(v.getEntero().length()>=entero_.length())return v.getEntero().length();
                       else return entero_.length();}
   public:
-    Entero(const std::string &entero){
+    Entero(const std::string &entero,int max=4){
+         negative=false;
          setEntero(entero);
+         setMax(max);
        }
-
+    void setMax(int max){max_=max;}
     void setEntero(const std::string &entero){
                                           assert(isInteger(entero));
-                                          entero_=entero;}
-
+                                          entero_=entero;
+                                          if(entero[0]=='-')negative=true;}
+    int getMax(){ return max_;}
     std::string getEntero()const{return entero_;}
 
     void partirCadena(std::string &c1, std::string &c2);

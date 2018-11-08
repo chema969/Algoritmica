@@ -107,9 +107,8 @@ Entero Entero::operator+( Entero &e){
 		acarreo = aux/10;
 	}
         suma= aux2+suma;
-        //std::cout<<x<<","<<y<<","<<acarreo<<","<<suma<<"\n";
        }
-        //std::cout<<"acarreo="<<acarreo<<"\n";
+
        while(i!=e.entero_.rend()){
           
           int aux;
@@ -161,6 +160,7 @@ Entero Entero::operator+( Entero &e){
 
 
 
+
 Entero Entero::operator*( Entero &e){
 
    bool negativeAvg=false;
@@ -176,6 +176,11 @@ Entero Entero::operator*( Entero &e){
 
     int n=this->mayorMagnitud(e);
     if(n<=this->getMax()) {
+    if(this->negative)
+      this->entero_= "-"+ this->entero_;  
+    
+    if(e.negative)
+       e.entero_= "-" + e.entero_;  
        std::string retval=std::to_string(std::stoi(e.entero_)*std::stoi(this->entero_));
        if(negativeAvg) retval="-"+retval;
        return Entero(retval);

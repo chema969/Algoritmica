@@ -15,8 +15,9 @@ class Vertice{
      void setNombre(string nombre){nombre_=nombre;} 
      int getLabel(){return label_;}
      string getNombre(){return nombre_;}
-
-}
+     friend  istream &operator>>(istream &stream,Vertice & vertice){
+                                                     string i; std::getline(stream,i,'\n'); vertice.setNombre(i);return stream;}
+};
 
 
 #endif

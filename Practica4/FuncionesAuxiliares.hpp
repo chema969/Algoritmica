@@ -6,5 +6,7 @@ int menu();
 
 void ViajanteDeComercio();
 
+void Viajante(Grafo &grafo,Grafo &solucion);
+
 void Mochila();
 #endif

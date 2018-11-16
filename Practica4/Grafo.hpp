@@ -1,10 +1,11 @@
 #ifndef GRAFO_HPP
 #define GRAFO_HPP
 
+#include <cassert>
 #include <vector>
 #include "Vertice.hpp"
 #include "Lado.hpp"
-#include <cassert>
+
 
 struct Dijkstra{
    std::vector <double> distancias;
@@ -20,7 +21,7 @@ class Grafo{
         std::vector<Vertice> vertices_;
         int vertice_cursor_;
         int lado_cursor_;
-
+        bool dirigido_;
 
 
         void dropAdyacencia(){
@@ -32,13 +33,14 @@ class Grafo{
 
         void createAdyacencia();
         
-        bool sortLados(Lado i,Lado j){return i.getPeso()<j.getPeso();}
+        static bool sortFunct(Lado i,Lado j){return i.getPeso()<j.getPeso();}
        
    public:
 
-         Grafo(){
+         Grafo(bool dir=false){
              vertice_cursor_=-1;
              lado_cursor_=-1;
+             dirigido_=dir;
                 }
  
 
@@ -51,7 +53,7 @@ class Grafo{
 
         bool adjacent(int u, int v)const;
 
-
+    
         bool hasCurrentVertice()const{
                           if(vertice_cursor_==-1) return false;
                           return true; 
@@ -59,9 +61,9 @@ class Grafo{
 
 
         Vertice currentVertice()const{
-                            #ifndef NDEBUG
+                            
                                assert(hasCurrentVertice());
-                            #endif
+                            
                              return vertices_[vertice_cursor_];}
 
 
@@ -72,9 +74,9 @@ class Grafo{
 
 
         Lado currentLado()const{
-                            #ifndef NDEBUG
+                            
                                assert(hasCurrentLado());
-                            #endif
+                            
                              return lados_[lado_cursor_];}       
        
         bool estanUnidos(int i,int j)const{
@@ -92,11 +94,13 @@ class Grafo{
                              }
                              return true;}
 
- 
-       void insertVertice(double x,double y);
+       void setDirigido(bool a){dirigido_=a;}       
+
+
+       void insertVertice(std::string nombre);
 
   
-       void insertLado(int u, int v);
+       void insertLado(int u, int v,int distancia);
 
 
        void removeVertice();
@@ -105,30 +109,30 @@ class Grafo{
        void removeLado();
 
 
-       bool findVertice(double x,double y);
+       bool findVertice(std::string a);
 
    
        void gotoVertice(int i){
-                            #ifndef NDEBUG
+
                                assert(i>=0);
                                assert((unsigned int)i<vertices_.size());
-                            #endif
+                            
                             vertice_cursor_=i;
                               } 
 
 
        void gotoFirstVertice(){
-                             #ifndef NDEBUG
+                             
                                 assert(!isEmpty());
-                             #endif
+                             
                              vertice_cursor_=0;
                                }            
        
 
        bool gotoNextVertice(){
-                            #ifndef NDEBUG
+                            
                                assert(hasCurrentVertice());
-                            #endif
+                            
                              if((unsigned int)vertice_cursor_<vertices_.size()-1){
                                           vertice_cursor_++;
                                           return true;
@@ -141,26 +145,26 @@ class Grafo{
 
   
       void gotoLado(int i){
-                            #ifndef NDEBUG
+                            
                                assert(i>=0);
                                assert((unsigned int)i<lados_.size());
-                            #endif
+                            
                             lado_cursor_=i;
                               }    
 
 
        void gotoFirstLado(){
-                             #ifndef NDEBUG
+                             
                                 assert(!lados_.empty());
-                             #endif
+                             
                              lado_cursor_=0;
                                }       
 
 
        bool gotoNextLado(){
-                            #ifndef NDEBUG
+                            
                                assert(hasCurrentLado());
-                            #endif
+                            
                              if((unsigned int)lado_cursor_<lados_.size()){ 
                                           lado_cursor_++;
                                           return true;}
@@ -168,6 +172,23 @@ class Grafo{
                               }
                           
        void imprimir();
+
+
+       void sortLados();
+
+       
+       std::vector<std::vector<int> > warshall()const;
+
+
+       Dijkstra dijkstra(int origen);
+
+       Grafo operator=(const Grafo b){this->adyacencia_=b.adyacencia_;
+        this->lados_=b.lados_;
+        this->vertices_=b.vertices_;
+        this->vertice_cursor_=b.vertice_cursor_;
+        this->lado_cursor_=b.lado_cursor_;
+        this->dirigido_=b.dirigido_;
+        return *this;}
                               
 };
 

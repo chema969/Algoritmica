@@ -11,25 +11,25 @@
 
 
 void Grafo::createAdyacencia(){
-      #ifndef NDEBUG
+      
         assert(adyacencia_.empty());
-      #endif
+      
         adyacencia_.resize(vertices_.size());
         for(unsigned int i=0;i<adyacencia_.size();i++)
                         adyacencia_[i].resize(vertices_.size(),0);
         for(unsigned int i=0;i<lados_.size();i++){
-                        adyacencia_[lados_[i].first()][lados_[i].second()]=1;
-                        adyacencia_[lados_[i].second()][lados_[i].first()]=1;
+                        adyacencia_[lados_[i].first()][lados_[i].second()]=lados_[i].getPeso();
+                        if(!dirigido_) adyacencia_[lados_[i].second()][lados_[i].first()]=lados_[i].getPeso();
                         }
          }
  
 
 
 bool Grafo::adjacent(int u, int v)const{
-   #ifndef NDEBUG
+   
      assert(((unsigned int)u<vertices_.size())&&(u>=0));
      assert(((unsigned int)v<vertices_.size())&&(v>=0));  
-   #endif 
+    
 
        if(adyacencia_[u][v]!=0)	return true;
        return false;
@@ -38,15 +38,9 @@ bool Grafo::adjacent(int u, int v)const{
 
 
 
-void Grafo::insertVertice(double x,double y){
-     Vertice vertice;
-     vertice.setX(x);
-     vertice.setY(y);
-     for(unsigned int i=0;i<vertices_.size();i++){
-          if(vertice==vertices_[i]){
-                      return;
-                         }
-              }
+void Grafo::insertVertice(std::string nombre){
+     Vertice vertice(nombre);
+
      vertice.setLabel(vertices_.size());
      vertices_.push_back(vertice);
      adyacencia_.resize(vertices_.size());
@@ -54,35 +48,32 @@ void Grafo::insertVertice(double x,double y){
            adyacencia_[i].resize(adyacencia_.size());
       }
       vertice_cursor_=vertices_.size()-1;
-      }
+   }
 
 
 
 
 
-void Grafo::insertLado(int u,int v){
-      #ifndef NDEBUG
+void Grafo::insertLado(int u, int v,int distancia){
+      
           assert(((unsigned int)u<vertices_.size())&&(u>=0));
           assert(((unsigned int)v<vertices_.size())&&(v>=0));
           assert(!adjacent(u,v));
-      #endif 
-      double x_value=pow(vertices_[u].getX()-vertices_[v].getX(),2);
-      double y_value=pow(vertices_[u].getY()-vertices_[v].getY(),2);
-      double peso=sqrt(x_value+y_value);
-      Lado lado(u,v,peso);
+       
+      Lado lado(u,v,distancia);
       lados_.push_back(lado);
-      adyacencia_[u][v]=1;
-      adyacencia_[v][u]=1;
+      adyacencia_[u][v]=distancia;
+      if(!dirigido_) adyacencia_[v][u]=distancia;
      lado_cursor_=lados_.size()-1;
     }
 
 
 void Grafo::removeLado(){
-      #ifndef NDEBUG
+      
           assert(hasCurrentLado());
-      #endif
+      
       adyacencia_[lados_[lado_cursor_].first()][lados_[lado_cursor_].second()]=0;
-      adyacencia_[lados_[lado_cursor_].second()][lados_[lado_cursor_].first()]=0;
+      if(dirigido_==false) adyacencia_[lados_[lado_cursor_].second()][lados_[lado_cursor_].first()]=0;
       lados_[lado_cursor_]=lados_[(lados_.size()-1)];
       lados_.erase(lados_.end()-1);
       lado_cursor_=-1;
@@ -106,13 +97,11 @@ void Grafo::removeVertice(){
 }
  
 
-bool Grafo::findVertice(double x,double y){
+bool Grafo::findVertice(std::string a){
       if(isEmpty())return false;
-      Vertice vertice;
-      vertice.setX(x);
-      vertice.setY(y); 
+
       for(unsigned int i=0;i<vertices_.size();i++){
-           if(vertice==vertices_[i]){
+           if(a==vertices_[i].getNombre()){
                           vertice_cursor_=i;
                           return true;
                             }
@@ -140,10 +129,31 @@ bool Grafo::findLado(int u,int v){
     }   
 
 
+void Grafo::imprimir(){
+
+
+ //Primero se imprimen todos los vertices
+   for(int i=0;i<size();i++){
+      std::cout<<"Vertice "<<i<<": "<<vertices_[i].getNombre()<<std::endl;
+      }
+
+//Luego la matriz de adyacencias
+   for(int i=0;i<size();i++){
+      std::cout<<"|";
+      for(int j=0;j<size();j++){
+        std::cout<<adyacencia_[i][j];
+        std::cout<<"\t";
+        }
+
+
+    std::cout<<"|"<<std::endl;
+   }
+}
+
 std::vector<std::vector<int> > Grafo::warshall()const{
-#ifndef NDEBUG
+
    assert(!isEmpty());
-#endif
+
 
     std::vector< std::vector<int> > path = adyacencia_;
     for(int k = 0; k < size(); k++){
@@ -161,10 +171,10 @@ std::vector<std::vector<int> > Grafo::warshall()const{
 
 
 Dijkstra Grafo::dijkstra(int origen){
-#ifndef NDEBUG
+
    assert(size()>1);
    assert((origen>=0)&&(origen<size()));
-#endif
+
      Dijkstra solucion;//Se crea un item de la clase Dijkstra
      solucion.distancias.resize(size());
      solucion.predecesores.resize(size(),origen);
@@ -209,6 +219,9 @@ Dijkstra Grafo::dijkstra(int origen){
 
 
 
+void Grafo::sortLados(){
+   std::sort(lados_.begin(),lados_.end(),sortFunct);
 
+}
 
 

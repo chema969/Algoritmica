@@ -36,9 +36,9 @@ class Lado{
  
 
       void setPeso(double i){
-                           #ifndef NDEBUG
+                           
                              assert(i>=0);
-                           #endif
+
                          peso_=i;
                          }
 
@@ -50,6 +50,6 @@ class Lado{
 
    
      };
-     }
+     
 
 #endif

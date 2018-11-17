@@ -26,7 +26,7 @@ void Grafo::createAdyacencia(){
 
 
 bool Grafo::adjacent(int u, int v)const{
-   
+
      assert(((unsigned int)u<vertices_.size())&&(u>=0));
      assert(((unsigned int)v<vertices_.size())&&(v>=0));  
     
@@ -55,7 +55,6 @@ void Grafo::insertVertice(std::string nombre){
 
 
 void Grafo::insertLado(int u, int v,int distancia){
-      
           assert(((unsigned int)u<vertices_.size())&&(u>=0));
           assert(((unsigned int)v<vertices_.size())&&(v>=0));
           assert(!adjacent(u,v));

@@ -42,7 +42,7 @@ class Lado{
                          peso_=i;
                          }
 
-
+      Lado operator=(const Lado &b){this->peso_=b.peso_; this->vertice1_=b.vertice1_; this->vertice2_=b.vertice2_; return *this;}
 
 
 

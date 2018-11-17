@@ -1,4 +1,6 @@
 #include "FuncionesAuxiliares.hpp"
+#include "Lado.hpp"
+#include "Vertice.hpp"
 #include "macros.hpp"
 #include <iostream>
 #include "Grafo.hpp"
@@ -109,6 +111,10 @@ void ViajanteDeComercio(){
      }
    Grafo solucion(dir>0);
    Viajante(grafo,solucion);
+   solucion.imprimir();
+   std::cout<<"El peso total del arbol abarcador de coste minimo es "<<solucion.getPesoTotal()<<std::endl;
+   std::cin.ignore();
+   std::cin.ignore();
 }
 
 
@@ -117,32 +123,111 @@ void Viajante(Grafo &grafo,Grafo &solucion){
     grafo.sortLados();
     grafo.gotoFirstVertice();
     do{
-     solucion.insertVertice(grafo.currentVertice());
+     solucion.insertVertice(grafo.currentVertice().getNombre());
     }while( grafo.gotoNextVertice());
     int l=0;
     std::vector< Grafo > conjuntos(grafo.size());
-    
+
     grafo.gotoFirstVertice();
     for(int i=0;i<grafo.size();i++){
-       conjuntos[i].insertVertice(grafo.currentVertice());
+       conjuntos[i].insertVertice(grafo.currentVertice().getNombre());
         grafo.gotoNextVertice();
    }
+
+   grafo.gotoFirstLado();
     do{
-     
+     Lado lad=grafo.currentLado();
+     grafo.gotoVertice(lad.first());
+
+     std::string first(grafo.currentVertice().getNombre());
 
 
+     grafo.gotoVertice(lad.second());
+     std::string sec=grafo.currentVertice().getNombre();
 
-    }while(l<grafo.size()-1);
+     int conjunto1=-1,conjunto2=-1;
+    for(int i=0;(i<conjuntos.size()&&(conjunto1==-1||conjunto2==-1));i++){
+        if(conjuntos[i].findVertice(first)) conjunto1=i;
+        if(conjuntos[i].findVertice(sec)) conjunto2=i;
+     } 
+     assert(conjunto1!=-1&&conjunto2!=-1);        
+      if(conjunto1!=conjunto2){
+        conjuntos[conjunto1].findVertice(first);
+        conjuntos[conjunto2].findVertice(sec);
+       if(conjuntos[conjunto1].numLadoCurrVertice()<2&&conjuntos[conjunto2].numLadoCurrVertice()<2){
+       conjuntos.push_back(unirConjuntos(conjuntos[conjunto1],conjuntos[conjunto2],first,sec,lad.getPeso()));
+       if(conjunto1>conjunto2){
+           conjuntos.erase(conjuntos.begin()+conjunto1);
+           conjuntos.erase(conjuntos.begin()+conjunto2);
+        }
+       else{
+           conjuntos.erase(conjuntos.begin()+conjunto2);
+           conjuntos.erase(conjuntos.begin()+conjunto1);
+       }
+       l++;
+      }
+     }
+    }while(l<grafo.size()-1&&grafo.gotoNextLado());
+   
+   solucion=conjuntos[conjuntos.size()-1];
+   std::vector<int> ultLado(2,-1);
+   std::vector<std::string> nombreLado(2,"p");
+   int q=0;
+   solucion.gotoFirstVertice();
+
+   do{
+     if(solucion.numLadoCurrVertice()<2){
+                   ultLado[q]=solucion.getCurrentCursor(); 
+                   nombreLado[q]=solucion.currentVertice().getNombre();q++;}
+
+   }while(solucion.gotoNextVertice()&&(ultLado[0]==-1||ultLado[1]==-1));
+
+   assert(ultLado[0]!=-1&&ultLado[1]!=-1);
+   grafo.findVertice(nombreLado[0]);
+   int i=grafo.getCurrentCursor();
+   grafo.findVertice(nombreLado[1]);
+   int j=grafo.getCurrentCursor();
+   
+   grafo.findLado(i,j);
+   solucion.insertLado(ultLado[0],ultLado[1],grafo.currentLado().getPeso());
 }
 
 
-Grafo unirConjuntos(const Grafo &a,const Grafo &b,int i,int j){
+Grafo unirConjuntos( Grafo &a, Grafo &b,std::string i,std::string j,int peso){
+    Grafo g;
+    a.gotoFirstVertice();
+     do{
+     g.insertVertice(a.currentVertice().getNombre());
+    }while( a.gotoNextVertice());
     
+    b.gotoFirstVertice();
+    do{
+       g.insertVertice(b.currentVertice().getNombre());
+    }while( b.gotoNextVertice());
+   
+    if(a.hasLados()){ 
+    a.gotoFirstLado();
+    do{
+      Lado lad=a.currentLado();
+      g.insertLado(lad.first(),lad.second(),lad.getPeso());
+    }while(a.gotoNextLado());
+    }
 
-
-
-
+    if(b.hasLados()){
+    b.gotoFirstLado();
+    do{
+      Lado lad=b.currentLado();
+      g.insertLado(lad.first()+a.size(),lad.second()+a.size(),lad.getPeso());
+    }while(b.gotoNextLado());
+    }
+    g.findVertice(i);
+    int aux1=g.getCurrentCursor();
+    g.findVertice(j);
+    g.insertLado(aux1,g.getCurrentCursor(),peso);
+    return g;
 }
+
+  
 void Mochila(){
 
 

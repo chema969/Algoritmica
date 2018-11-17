@@ -1,6 +1,6 @@
 #ifndef GRAFO_HPP
 #define GRAFO_HPP
-
+#include <iostream>
 #include <cassert>
 #include <vector>
 #include "Vertice.hpp"
@@ -53,7 +53,15 @@ class Grafo{
 
         bool adjacent(int u, int v)const;
 
-    
+        bool hasLados(){return !lados_.empty();}
+
+        int getCurrentCursor(){ return   vertice_cursor_;}
+      
+        int getPesoTotal()const{
+                            int sum=0;
+                            for(unsigned int i=0;i<lados_.size();i++) sum=sum+lados_[i].getPeso();
+                            return sum;
+}
         bool hasCurrentVertice()const{
                           if(vertice_cursor_==-1) return false;
                           return true; 
@@ -63,7 +71,7 @@ class Grafo{
         Vertice currentVertice()const{
                             
                                assert(hasCurrentVertice());
-                            
+                              //std::cout<<"Cursor="<< vertices_[vertice_cursor_].getNombre()<<std::endl;
                              return vertices_[vertice_cursor_];}
 
 
@@ -116,7 +124,7 @@ class Grafo{
 
                                assert(i>=0);
                                assert((unsigned int)i<vertices_.size());
-                            
+
                             vertice_cursor_=i;
                               } 
 
@@ -143,6 +151,15 @@ class Grafo{
 
       bool findLado(int u,int v);
 
+     
+      int numLadoCurrVertice(){
+            assert(hasCurrentVertice());
+                            int sol=0;
+                            for(int i=0;i<adyacencia_.size();i++){
+                                 if(adjacent(vertice_cursor_,i)) sol++;
+                            }
+                            
+                            return sol;}
   
       void gotoLado(int i){
                             
@@ -165,7 +182,7 @@ class Grafo{
                             
                                assert(hasCurrentLado());
                             
-                             if((unsigned int)lado_cursor_<lados_.size()){ 
+                             if((unsigned int)lado_cursor_<lados_.size()-1){ 
                                           lado_cursor_++;
                                           return true;}
                              return false;
@@ -182,7 +199,7 @@ class Grafo{
 
        Dijkstra dijkstra(int origen);
 
-       Grafo operator=(const Grafo b){this->adyacencia_=b.adyacencia_;
+       Grafo operator=(const Grafo &b){this->adyacencia_=b.adyacencia_;
         this->lados_=b.lados_;
         this->vertices_=b.vertices_;
         this->vertice_cursor_=b.vertice_cursor_;

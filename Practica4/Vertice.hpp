@@ -13,10 +13,12 @@ class Vertice{
      Vertice(string nombre="",int label=0){ nombre_=nombre; label_=label;}
      void setLabel(int label){label_=label;}
      void setNombre(string nombre){nombre_=nombre;} 
-     int getLabel(){return label_;}
-     string getNombre(){return nombre_;}
+     int getLabel()const{return label_;}
+     string getNombre()const {return nombre_;}
      friend  istream &operator>>(istream &stream,Vertice & vertice){
                                                      string i; std::getline(stream,i,'\n'); vertice.setNombre(i);return stream;}
+     
+     
 };
 
 

@@ -2,6 +2,7 @@
 #include "Lado.hpp"
 #include "Vertice.hpp"
 #include "macros.hpp"
+#include "SistemaMonetario.hpp"
 #include <iostream>
 #include "Grafo.hpp"
 #include <fstream>
@@ -33,7 +34,7 @@ int menu(){
 	posicion++;
 
 	PLACE(posicion++,10);
-	std::cout << "[2] Realizar el problema de la mochila";
+	std::cout << "[2] Realizar el problema del cambio";
 
 	posicion++;
 
@@ -228,7 +229,50 @@ Grafo unirConjuntos( Grafo &a, Grafo &b,std::string i,std::string j,int peso){
 }
 
   
-void Mochila(){
+void Cambio(){
+  SistemaMonetario sist;
+  std::cout<<"Introduce el fichero con los vertices:"<<std::endl;
+   std::string nombre;
+   std::cin>>nombre;
+   std::ifstream fichero;
+     fichero.open(nombre.c_str());
 
-
+   //Prueba si el fichero se abrió bien
+     if(!fichero.good()){
+         std::cout<<BIRED<<"No se pudo cargar el fichero de entrada"<<RESET<<std::endl;
+         return;}
+  fichero>>sist;//se meten los datos del fichero
+  fichero.close();
+  
+  std::cout<<"Introduce el numero a cambiar"<<std::endl;
+  int n;
+  std::cin>>n;
+  if(n<1){std::cout<<"Error"<<std::endl; return;}
+  
+  std::vector <int> cantMonedas;
+  std::vector <Moneda> solucion;
+  int s=n;
+  int lastMoneda=sist.getSistemaMonetario()[sist.size()-1].getValor()+1;
+  while(s!=0){
+      if(!sist.setMaximo(s)){
+              std::cout<<"NO existe solucion al problema"<<std::endl;
+              return;}
+      else{
+         Moneda aux=sist.getMaximo();
+         s=s-aux.getValor();
+         if(aux.getValor()<lastMoneda){
+            lastMoneda=aux.getValor();
+            solucion.push_back(aux);
+            cantMonedas.push_back(1);
+         }
+         else{
+           cantMonedas[cantMonedas.size()-1]++;
+         }
+       }
+  }  
+  std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
+  for(int i=0;i<cantMonedas.size();i++)
+      std::cout<<cantMonedas[i]<<" "<<solucion[i].getTipo() <<" de "<<solucion[i].getValor()<<std::endl;
+  std::cin.ignore();
+  std::cin.ignore();
 }

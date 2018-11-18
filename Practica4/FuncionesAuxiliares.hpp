@@ -11,5 +11,7 @@ void Viajante(Grafo &grafo,Grafo &solucion);
 
 Grafo unirConjuntos( Grafo &a, Grafo &b,std::string i,std::string j,int peso);
 
-void Mochila();
+void Cambio();
+
+
 #endif

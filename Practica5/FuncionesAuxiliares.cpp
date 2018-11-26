@@ -79,6 +79,50 @@ void Cambio(){
   std::cin>>n;
   if(n<1){std::cout<<"Error"<<std::endl; return;}
   
+  std::vector<std::vector <int> > monedasCamb;
+  cambAlgDinam(sist,n,monedasCamb);
+  std::vector<Moneda> sistema=sist.getSistemaMonetario();
+
+ 
+  for(int i=0;i<monedasCamb.size();i++){
+       for(int j=0;j<monedasCamb[i].size();j++){
+         if(monedasCamb[i][j]!=-1)
+          std::cout<<monedasCamb[i][j]<<" ";
+         else
+          std::cout<<"∞ ";
+        }
+        std::cout<<"\n";
+  }
+  std::vector <int> solucion(sist.size(),0);
+  int i=monedasCamb.size()-1,j=n;
+  while(j>0&&i>0){ 
+     if(monedasCamb[i][j]==monedasCamb[i-1][j]) i--;
+     else{
+        if( monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){
+             solucion[i]++;      j=j-sistema[i].getValor();
+         }
+       }
+  }
+
+ if(i<=0||j<0){
+        std::cout<<"NO TIENE SOLUCION\n";
+     }
+ else{
+  std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
+  for(int k=0;k<solucion.size();k++){
+     if(solucion[k]!=0)
+         std::cout<<solucion[k]<<" "<<sistema[k].getTipo()<<" de "<<sistema[k].getValor()<<" centimos\n";
+  }
+  }
+  std::cin.ignore();
+  std::cin.ignore();
+}
+
+
+
+
+
+void cambAlgDinam(const SistemaMonetario &sist,int n, std::vector<std::vector <int> > &vectorCamb){
   std::vector<std::vector <int> > monedasCamb(sist.size(),std::vector<int>(n+1,0));
   std::vector<Moneda> sistema=sist.getSistemaMonetario();
 
@@ -103,39 +147,9 @@ void Cambio(){
                }   
        }
   }
-  
-  for(int i=0;i<monedasCamb.size();i++){
-       for(int j=0;j<monedasCamb[i].size();j++){
-         if(monedasCamb[i][j]!=-1)
-          std::cout<<monedasCamb[i][j]<<" ";
-         else
-          std::cout<<"∞ ";
-        }
-        std::cout<<"\n";
-  }
-  std::vector <int> solucion(sist.size(),0);
-  int i=monedasCamb.size()-1,j=n;
-  while(j>0&&i>0){ 
-     if(monedasCamb[i][j]==monedasCamb[i-1][j]) i--;
-     else{
-        if( monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){
-             solucion[i]++;      j=j-sistema[i].getValor();
-         }
-       }
-  }
- if(i<=0||j<0){
-        std::cout<<"NO TIENE SOLUCION\n";
-     }
- else{
-  std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
-  for(int k=0;k<solucion.size();k++){
-     if(solucion[k]!=0)
-         std::cout<<solucion[k]<<" "<<sistema[k].getTipo()<<" de "<<sistema[k].getValor()<<" centimos\n";
-  }
-  }
-  std::cin.ignore();
-  std::cin.ignore();
+  vectorCamb=monedasCamb;
 }
+
 
 int min(int i,int j){
     if(i==-1) return j;

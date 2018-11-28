@@ -2,7 +2,12 @@
 #include "macros.hpp"
 #include "SistemaMonetario.hpp"
 #include "Moneda.hpp"
+#include "Mochila.hpp"
+#include "Material.hpp"
+#include "MinimosCuadrados.hpp"
+#include "Tiempo.hpp"
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <string>
 using namespace std;
@@ -26,7 +31,7 @@ int menu(){
 	posicion++;
 
 	PLACE(posicion++,10);
-	std::cout <<  "[1] Realizar el problema del viajante de comercio";
+	std::cout <<  "[1] Realizar el problema de la mochila";
 
 	//////////////////////////////////////////////////////////////////////////////
 	posicion++;
@@ -57,8 +62,79 @@ int menu(){
 }
 
 
-void Mochila(){}
+void AlgMochila(){
+   std::cout<<"Introduce la capacidad de la mochila"<<std::endl;
+   int din;
+   std::cin>>din;
+   if(din<1){std::cout<<"Error"<<std::endl; return;}
+   Mochila moc(din);
+   std::vector<Material> m;
+   
+   std::string nombre="../Materiales.txt";
+   std::ifstream fichero;
+     fichero.open(nombre.c_str());
+
+   //Prueba si el fichero se abrió bien
+     if(!fichero.good()){
+         std::cout<<BIRED<<"No se pudo cargar el fichero de entrada"<<RESET<<std::endl;
+         return;}
+  Material aux;
+   
+  while(fichero>>aux) m.push_back(aux);
+           
+  fichero.close();
+  std::vector<std::vector <int> > matrizSol;
+  mochAlgDin(m, matrizSol,din);
+  getSolucionMochila(m, matrizSol,moc);
+  std::cout<<moc<<"\n";
+}
   
+void mochAlgDin(const std::vector<Material> &m,std::vector<std::vector <int> > &solucion,int n){
+    std::vector<std::vector <int> > matrizSol(m.size(),vector<int>(n+1,0));
+    for(int i=0;i<matrizSol.size();i++){
+       for(int j=1;j<matrizSol[i].size();j++){
+          if(j<m[i].getCantidad()&&i==0) matrizSol[i][j]=0;
+          else{
+              if(i==0)
+                 matrizSol[i][j]=m[i].getCantidad()*m[i].getPrecio();
+              else{
+                if(j<m[i].getCantidad())
+                   matrizSol[i][j]=matrizSol[i-1][j];
+                else
+                   matrizSol[i][j]=max(matrizSol[i-1][j],(int)(m[i].getCantidad()*m[i].getPrecio()+matrizSol[i-1][j-m[i].getCantidad()]));
+                 }
+             }
+       }
+    }
+  solucion=matrizSol;
+}
+
+void getSolucionMochila(const std::vector<Material> &m,const std::vector<std::vector <int> > &solucion,Mochila &moc){
+   int i=m.size()-1;
+   int j=solucion[i].size()-1;
+   while(j>0&&i>=0){ 
+    if(i==0){
+       if(m[0].getCantidad()>=moc.getCapacidadRestante()){  moc.insertarMaterial(m[i]);} //std::cout<<i<<std::endl;}
+       i--;
+    }
+    else{
+     if(solucion[i][j]==solucion[i-1][j]) i--;
+     else{
+            //std::cout<<i<<std::endl;
+       // if( solucion[i][j]==m[i].getCantidad()*m[i].getPrecio()+solucion[i-1][j-m[i].getCantidad()]){
+             moc.insertarMaterial(m[i]);      j=j-m[i].getCantidad();
+       //  }
+       }
+     }
+  }
+
+}
+
+int max(int i,int j){
+   if(j>i) return j;
+   else return i;
+ }
+
 void Cambio(){
   SistemaMonetario sist;
   //std::cout<<"Introduce el fichero con los vertices:"<<std::endl;
@@ -73,7 +149,7 @@ void Cambio(){
          return;}
   fichero>>sist;//se meten los datos del fichero
   fichero.close();
-  
+
   std::cout<<"Introduce el numero a cambiar"<<std::endl;
   int n;
   std::cin>>n;
@@ -84,7 +160,7 @@ void Cambio(){
   std::vector<Moneda> sistema=sist.getSistemaMonetario();
 
  
-  for(int i=0;i<monedasCamb.size();i++){
+ /* for(int i=0;i<monedasCamb.size();i++){
        for(int j=0;j<monedasCamb[i].size();j++){
          if(monedasCamb[i][j]!=-1)
           std::cout<<monedasCamb[i][j]<<" ";
@@ -92,7 +168,7 @@ void Cambio(){
           std::cout<<"∞ ";
         }
         std::cout<<"\n";
-  }
+  }*/
   std::vector <int> solucion(sist.size(),0);
   int i=monedasCamb.size()-1,j=n;
   while(j>0&&i>0){ 

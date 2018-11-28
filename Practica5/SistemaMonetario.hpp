@@ -11,12 +11,19 @@ class SistemaMonetario{
    private:
      vector <Moneda> sistemaMonetario_;
      int cursor_max_;
-     static bool sortFunct(Moneda i,Moneda j){return i.getValor()<j.getValor();}
+     //static bool sortFunct(Moneda i,Moneda j){return i.getValor()<j.getValor();}
    public:
      SistemaMonetario(){
             cursor_max_=-1;}
 
-     void insertMoneda(const Moneda m){ sistemaMonetario_.push_back(m);sortMonedas(); }
+     void insertMoneda(const Moneda m){ 
+                          for (std::vector<Moneda>::iterator it = sistemaMonetario_.begin() ; it != sistemaMonetario_.end(); ++it){
+                                               if(m.getValor()<it->getValor()){
+                                                      sistemaMonetario_.insert(it,m);return;
+                                                }                        
+                          }
+                          sistemaMonetario_.push_back(m);
+                          }
 
      bool borrarMoneda(const Moneda m){ for(int i=0;i<sistemaMonetario_.size();i++){
                                        if(m==sistemaMonetario_[i]){
@@ -28,7 +35,7 @@ class SistemaMonetario{
     
      vector <Moneda> getSistemaMonetario()const{ return sistemaMonetario_;}
 
-     void sortMonedas(){sort(sistemaMonetario_.begin(),sistemaMonetario_.end(),sortFunct);}
+    // void sortMonedas(){sort(sistemaMonetario_.begin(),sistemaMonetario_.end(),sortFunct);}
      
      bool setMaximo(int k){//Pone el cursor al maximo cambio que puede ofrecer para un valor k
                      cursor_max_=-1;

@@ -16,7 +16,7 @@ int main(){
             break;
  
          case 1: 
-             Mochila(); 
+             AlgMochila(); 
             break;
 
          case 2:

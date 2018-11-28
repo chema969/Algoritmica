@@ -2,10 +2,16 @@
 #define FUNCIONES_AUXILIARES_HPP
 #include <vector>
 #include "SistemaMonetario.hpp"
+#include "Material.hpp"
+#include "Mochila.hpp"
 
 int menu();
 
-void Mochila();
+void AlgMochila();
+
+void mochAlgDin(const std::vector<Material> &m,std::vector<std::vector <int> > &solucion,int n);
+
+void getSolucionMochila(const std::vector<Material> &m,const std::vector<std::vector <int> > &solucion,Mochila &moc);
 
 void Cambio();
 

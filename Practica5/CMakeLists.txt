@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(practica1_ed)
 set (CMAKE_CXX_FLAGS "-lrt -g -std=c++11")
-add_executable(Principal Principal.cpp FuncionesAuxiliares.cpp)
+add_executable(Principal Principal.cpp FuncionesAuxiliares.cpp Tiempo.cpp Mochila.cpp MinimosCuadrados.cpp sistemaEcuaciones.cpp)
  

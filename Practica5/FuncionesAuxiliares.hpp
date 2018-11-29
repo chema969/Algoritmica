@@ -19,4 +19,11 @@ int min(int i,int j);
 
 void cambAlgDinam(const SistemaMonetario &sist,int n, std::vector<std::vector <int> > &vectorCamb);
 
+bool getSolCambio(const std::vector<std::vector <int> > &monedasCamb,const SistemaMonetario &sist,std::vector<int> &sol);
+
+void CambioTiempo();
+
+void MochilaTiempo();
+
+void generarAleatoriamente(std::vector<Material> &mat,int i,int &tamMochila);
 #endif

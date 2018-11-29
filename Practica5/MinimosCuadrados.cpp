@@ -145,60 +145,41 @@ std::vector < std::vector< double> > calcularMinimosCuadradosCoef(const std::vec
 
    return minimosCuadrados;
 }
-/*
-void TiempoAlgoritmos(double & tiempo){
-   tiempo=tiempo/pow(10, 6);
-   unsigned long long int tiempoEntero = tiempo;
 
-   unsigned long long int minutos= tiempoEntero/60;
-   unsigned long long int segundos= tiempoEntero%60;
-   unsigned long long int horas= minutos/60;
-   minutos=minutos%60;
-   unsigned long long int dias = horas/24;
-   horas=horas%24;
-   unsigned long long int agnos = dias / 365;
-   dias=dias%365;
+void TiempoAlgoritmos(long long int i){
 
-   std::cout << agnos << "años, " << dias << " dias, " << horas << " horas, " << minutos << " minutos y " << (float)segundos + (float)tiempo - (float)tiempoEntero << " segundos." << std::endl;
-}*/
+ long long int mil=0,seg=0,min=0,hor=0,dia=0,anyo=0;
+ if(i/1000>=1){
+   mil=i/1000;
+   i=i%1000;
+ }
+ if(mil/1000>=1){
+   seg=mil/1000;
+   mil=mil%1000;
+ }
+ if(seg/60>=1){
+   min=seg/60;
+   seg=seg%60;
+ }
+ if(min/60>=1){
+   hor=min/60;
+   min=min%60;
+ }
+ if(hor/24>=1){
+   dia=hor/24;
+   hor=hor%24;
+ }
+ if(dia/365>=1){
+   anyo=dia/365;
+   dia=dia%365;
+ }
+ std::cout<<anyo<<" años, "<<dia<<" dias, "<<hor<<" horas, "<<min<<" minutos, "<<seg<<" segundos, "<<mil<<"milisegundos "<<i<<" microsegundos\n";
 
-
-void notacion_tiempos(long double i){
-
-  long double anyos=0, dias=0, horas=0, minutos=0, segundos=0, milisegundos=0;
-
-
-   if(i>=(3.1536*pow(10,13))){
-   anyos=i/(3.1536*pow(10,13));
-   i=fmod(i,(3.1536*pow(10,13)));
-   }
-
-   if(i>=8.64*pow(10,10)){
-   dias=i/8.64*pow(10,10);
-   i=fmod(i,(8.64*pow(10,10)));
-   }
-
-   if(i>=3.6*pow(10,9)){
-   horas=i/3.6*pow(10,9);
-   i=fmod(i,(3.6*pow(10,9)));
-   }
-
-   if(i>=6*pow(10,7)){
-   minutos=i/6*pow(10,7);
-   i=fmod(i,(6*pow(10,7)));
-   }
-
-   if(i>=1*pow(10,6)){
-   segundos=i/1*pow(10,6);
-   i=fmod(i,(1*pow(10,6)));
-   }
-   
-   if(i>=1*pow(10,3)){
-   milisegundos=i/1*pow(10,3);
-   i=fmod(i,(1*pow(10,3)));
-   }
-   std::cout<<anyos<<","<<dias<<","<<horas<<","<<minutos<<","<<segundos<<","<<milisegundos<<std::endl;
+  
 }
+
+
+
 
 
 double sumaVector(const std::vector<double> &vector,double exponente){

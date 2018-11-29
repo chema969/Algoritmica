@@ -10,6 +10,9 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <ctime>
+#include <cmath>
+#include <cstdlib>
 using namespace std;
 int menu(){
 
@@ -38,6 +41,16 @@ int menu(){
 
 	PLACE(posicion++,10);
 	std::cout << "[2] Realizar el problema del cambio";
+	//////////////////////////////////////////////////////////////////////////////
+	posicion++;
+
+	PLACE(posicion++,10);
+	std::cout <<  "[3] Analisis temporal del problema de la mochila";
+	//////////////////////////////////////////////////////////////////////////////
+	posicion++;
+
+	PLACE(posicion++,10);
+	std::cout <<  "[4] Analisis temporal del problema del cambio";
 
 	posicion++;
 
@@ -61,6 +74,80 @@ int menu(){
 	return opcion;
 }
 
+void MochilaTiempo(){
+  Clock tim;
+  srand (time(NULL));
+
+  std::cout<<"Introduce las repeticiones"<<std::endl;
+  int rep;
+  std::cin>>rep;
+  if(rep<1){std::cout<<"Error"<<std::endl; return;}
+
+  Mochila moc;
+  std::vector<Material> m;
+  std::vector<std::vector <int> > matrizSol;
+  
+  std::vector <double> muestraReal;
+  std::vector <double> muestra;
+  std::vector <double> tiempo;
+  double tiempo_pasado;
+  double tam_medio;
+  for(int i=100;i<=200;i++){
+      tam_medio=0;
+      tiempo_pasado=0;
+      muestra.push_back(i);
+   for(int k=0;k<rep;k++){
+      int tam;
+      generarAleatoriamente(m,i,tam);
+      moc.setCapacidad(tam);
+      tam_medio+=tam;
+      tim.start();
+      mochAlgDin(m, matrizSol,moc.getCapacidad());
+      getSolucionMochila(m, matrizSol,moc);
+      if (tim.isStarted()){
+          tim.stop();
+          tiempo_pasado+=tim.elapsed();
+         }
+    }
+    muestraReal.push_back(sqrt((tam_medio/rep)*i));
+    tiempo.push_back(tiempo_pasado/rep);
+   } 
+
+  std::vector<double> tiempo_estimado(muestra.size());
+  std::vector<std::vector<double> > sol=calcularMinimosCuadrados(muestraReal, tiempo,3);
+  std::ofstream file;
+  file.open("FicheroMochila.txt");
+  for(int i=0;i<muestra.size();i++){
+     tiempo_estimado[i]=calcularValorAprox(muestraReal[i],sol,3);       
+     file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;}
+     
+  file.close();
+  system("../graficaMochila.sh");
+  std::cout<<"\nFunción de minimos cuadrados: "<<sol[2][0]<<"X²+"<<sol[1][0]<<"X+"<<sol[0][0]<<std::endl;
+  std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl; 
+
+ double valorn=1,valorN=1;
+ while(valorn!=0&&valorN!=0){
+    std::cout<<"\nIntroduce la cantidad de materiales y la capacidad de la mochila separados por espacios para estimar(0 0,salir):";
+    std::cin>>valorn>>valorN;
+    if(valorn>0&&valorN>0){
+    std::cout<<BIBLUE<<"La estimacion del tiempo para ese valor es de "<<RESET;
+    TiempoAlgoritmos(calcularValorAprox(sqrt(valorn*valorN),sol,3));}
+   }
+}
+
+void generarAleatoriamente(std::vector<Material> &mat,int i,int &tamMochila){
+   std::vector<Material> m;
+   int cantidad_total=0;
+   for(int j=0;j<i;j++){
+      int k=rand()%100+1;
+      cantidad_total+=k;
+      Material aux(j,k,rand()%100+1);
+      m.push_back(aux);
+   }
+  mat=m;
+  tamMochila=cantidad_total/2;
+}
 
 void AlgMochila(){
    std::cout<<"Introduce la capacidad de la mochila"<<std::endl;
@@ -86,10 +173,14 @@ void AlgMochila(){
   std::vector<std::vector <int> > matrizSol;
   mochAlgDin(m, matrizSol,din);
   getSolucionMochila(m, matrizSol,moc);
+
   std::cout<<moc<<"\n";
+  std::cout<<BIBLUE<<"EL coste total de la mochila es "<<RESET<<matrizSol[matrizSol.size()-1][matrizSol[0].size()-1]<<std::endl;
+  std::cin.ignore();
   std::cin.ignore();
 }
   
+
 void mochAlgDin(const std::vector<Material> &m,std::vector<std::vector <int> > &solucion,int n){
     std::vector<std::vector <int> > matrizSol(m.size(),vector<int>(n+1,0));
     for(int i=0;i<matrizSol.size();i++){
@@ -110,6 +201,7 @@ void mochAlgDin(const std::vector<Material> &m,std::vector<std::vector <int> > &
   solucion=matrizSol;
 }
 
+
 void getSolucionMochila(const std::vector<Material> &m,const std::vector<std::vector <int> > &solucion,Mochila &moc){
    int i=m.size()-1;
    int j=solucion[i].size()-1;
@@ -121,10 +213,10 @@ void getSolucionMochila(const std::vector<Material> &m,const std::vector<std::ve
     else{
      if(solucion[i][j]==solucion[i-1][j]) i--;
      else{
-            //std::cout<<i<<std::endl;
+            
        if( solucion[i][j]==m[i].getCantidad()*m[i].getPrecio()+solucion[i-1][j-m[i].getCantidad()]){
              moc.insertarMaterial(m[i]);      j=j-m[i].getCantidad(); i--;}
-       //  }
+       
        }
      }
   }
@@ -135,6 +227,77 @@ int max(int i,int j){
    if(j>i) return j;
    else return i;
  }
+
+
+void CambioTiempo(){
+  Clock time;
+  SistemaMonetario sist;
+
+   std::string nombre="../Euros.txt";
+   std::ifstream fichero;
+     fichero.open(nombre.c_str());
+
+   //Prueba si el fichero se abrió bien
+     if(!fichero.good()){
+         std::cout<<BIRED<<"No se pudo cargar el fichero de entrada"<<RESET<<std::endl;
+         return;}
+  fichero>>sist;//se meten los datos del fichero
+  fichero.close();
+  
+  std::cout<<"Introduce el incremento"<<std::endl;
+  int n;
+  std::cin>>n;
+  std::cout<<"Introduce las repeticiones"<<std::endl;
+  int rep;
+  std::cin>>rep;
+  if(n<1||rep<1){std::cout<<"Error"<<std::endl; return;}
+
+  std::vector<std::vector <int> > monedasCamb;
+  std::vector <int> solucion;
+
+  std::vector <double> muestra;
+  std::vector <double> tiempo;
+  double tiempo_pasado;
+  for(int i=50000;i<=100000;i=i+n){
+   tiempo_pasado=0;
+      muestra.push_back(i);
+   for(int k=0;k<rep;k++){
+      time.start();
+      cambAlgDinam(sist,i,monedasCamb);
+      getSolCambio(monedasCamb,sist,solucion);
+      if (time.isStarted()){
+          time.stop();
+          tiempo_pasado+=time.elapsed();
+         }
+    }
+    tiempo.push_back(tiempo_pasado/rep);
+   } 
+  std::vector<double> tiempo_estimado(muestra.size());
+  std::vector<std::vector<double> > sol=calcularMinimosCuadrados(muestra, tiempo,2);
+  std::ofstream file;
+  file.open("FicheroCambio.txt");
+  for(int i=0;i<muestra.size();i++){
+     tiempo_estimado[i]=calcularValorAprox(muestra[i],sol,2);       
+     file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;}
+     
+  file.close();
+  system("../graficaCambio.sh");
+  std::cout<<"\nFunción de minimos cuadrados: "<<sol[1][0]<<"X+"<<sol[0][0]<<std::endl;
+  std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl; 
+
+ double valor=1;
+ while(valor!=0){
+    std::cout<<"\nIntroduce valor para estimar(n=0,salir):";
+    std::cin>>valor;
+    if(valor>0){
+    std::cout<<"La estimacion del tiempo para ese valor es de ";
+    TiempoAlgoritmos(calcularValorAprox(valor,sol,2));}
+   }
+}
+
+
+
+
 
 void Cambio(){
   SistemaMonetario sist;
@@ -160,37 +323,19 @@ void Cambio(){
   cambAlgDinam(sist,n,monedasCamb);
   std::vector<Moneda> sistema=sist.getSistemaMonetario();
 
- 
- /* for(int i=0;i<monedasCamb.size();i++){
-       for(int j=0;j<monedasCamb[i].size();j++){
-         if(monedasCamb[i][j]!=-1)
-          std::cout<<monedasCamb[i][j]<<" ";
-         else
-          std::cout<<"∞ ";
-        }
-        std::cout<<"\n";
-  }*/
-  std::vector <int> solucion(sist.size(),0);
-  int i=monedasCamb.size()-1,j=n;
- 
- if(monedasCamb[monedasCamb.size()
-  while(j>0&&i>0){ 
-     if(monedasCamb[i][j]==monedasCamb[i-1][j]) i--;
-     else{
-        if( monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){
-             solucion[i]++;      j=j-sistema[i].getValor();
-         }
-       }
-  }
- if(i==0&& monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){ solucion[0]++;}
- 
 
-  std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
-  for(int k=0;k<solucion.size();k++){
+  std::vector <int> solucion;
+  
+ 
+  if(getSolCambio(monedasCamb,sist,solucion)){
+   std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
+   for(int k=0;k<solucion.size();k++){
      if(solucion[k]!=0)
          std::cout<<solucion[k]<<" "<<sistema[k].getTipo()<<" de "<<sistema[k].getValor()<<" centimos\n";
+   }
   }
-  
+  else
+        std::cout<<"No tiene solucion"<<std::endl;
   std::cin.ignore();
   std::cin.ignore();
 }
@@ -227,6 +372,24 @@ void cambAlgDinam(const SistemaMonetario &sist,int n, std::vector<std::vector <i
   vectorCamb=monedasCamb;
 }
 
+bool getSolCambio(const std::vector<std::vector <int> > &monedasCamb,const SistemaMonetario &sist,std::vector<int> &sol){
+   std::vector<Moneda> sistema=sist.getSistemaMonetario();
+   std::vector<int> solucion(monedasCamb.size(),0);
+   int i=monedasCamb.size()-1,j=monedasCamb[i].size()-1;
+ 
+   if(monedasCamb[i][j]==-1) return false;
+    while(j>0&&i>0){ 
+     if(monedasCamb[i][j]==monedasCamb[i-1][j]) i--;
+     else{
+        if( monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){
+             solucion[i]++;      j=j-sistema[i].getValor();
+         }
+       }
+    }
+   if(i==0&& monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){ solucion[0]++;}
+   sol=solucion;
+   return true;
+}
 
 int min(int i,int j){
     if(i==-1) return j;

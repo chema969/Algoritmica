@@ -12,6 +12,5 @@ double desviacionTipica(const std::vector<double> &v);
 double media(const std::vector<double> &v);
 double varianza(const std::vector<double> &v);
 double calcularValorAprox(double valorAprox,const std::vector < std::vector <double> > &soluciones,int n);
-void notacion_tiempos(long double i);
-
+void TiempoAlgoritmos(long long int i);
 #endif

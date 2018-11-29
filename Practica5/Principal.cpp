@@ -23,6 +23,14 @@ int main(){
             Cambio();
             break;        
 
+         case 3:
+            MochilaTiempo();
+            break;
+
+         case 4:
+            CambioTiempo();
+            break;
+
          default:
             std::cout<<"Opcion incorrecta"<<std::endl;
          

@@ -22,7 +22,7 @@ class Material{
      friend  istream &operator>>(istream &stream,Material & mat){
                                    stream>>mat.etiqueta_>>mat.cantidad_>>mat.precio_;return stream;}
      friend  ostream &operator<<(ostream &stream,const Material & mat){
-                                   stream<<mat.getEtiqueta()<<" "<<mat.getCantidad()<<" "<<mat.getPrecio(); return stream;}
+                                   stream<<"El material "<<mat.getEtiqueta()<<" que pesa "<<mat.getCantidad()<<" y vale "<<mat.getPrecio(); return stream;}
 
 };
 

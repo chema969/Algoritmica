@@ -87,6 +87,7 @@ void AlgMochila(){
   mochAlgDin(m, matrizSol,din);
   getSolucionMochila(m, matrizSol,moc);
   std::cout<<moc<<"\n";
+  std::cin.ignore();
 }
   
 void mochAlgDin(const std::vector<Material> &m,std::vector<std::vector <int> > &solucion,int n){
@@ -113,16 +114,16 @@ void getSolucionMochila(const std::vector<Material> &m,const std::vector<std::ve
    int i=m.size()-1;
    int j=solucion[i].size()-1;
    while(j>0&&i>=0){ 
-    if(i==0){
-       if(m[0].getCantidad()>=moc.getCapacidadRestante()){  moc.insertarMaterial(m[i]);} //std::cout<<i<<std::endl;}
+     if(i==0){
+       if(m[0].getCantidad()<=moc.getCapacidadRestante())  moc.insertarMaterial(m[i]);
        i--;
     }
     else{
      if(solucion[i][j]==solucion[i-1][j]) i--;
      else{
             //std::cout<<i<<std::endl;
-       // if( solucion[i][j]==m[i].getCantidad()*m[i].getPrecio()+solucion[i-1][j-m[i].getCantidad()]){
-             moc.insertarMaterial(m[i]);      j=j-m[i].getCantidad();
+       if( solucion[i][j]==m[i].getCantidad()*m[i].getPrecio()+solucion[i-1][j-m[i].getCantidad()]){
+             moc.insertarMaterial(m[i]);      j=j-m[i].getCantidad(); i--;}
        //  }
        }
      }
@@ -171,6 +172,8 @@ void Cambio(){
   }*/
   std::vector <int> solucion(sist.size(),0);
   int i=monedasCamb.size()-1,j=n;
+ 
+ if(monedasCamb[monedasCamb.size()
   while(j>0&&i>0){ 
      if(monedasCamb[i][j]==monedasCamb[i-1][j]) i--;
      else{
@@ -179,17 +182,15 @@ void Cambio(){
          }
        }
   }
+ if(i==0&& monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){ solucion[0]++;}
+ 
 
- if(i<=0||j<0){
-        std::cout<<"NO TIENE SOLUCION\n";
-     }
- else{
   std::cout<<BIBLUE<<"El cambio requiere:"<<RESET<<std::endl;
   for(int k=0;k<solucion.size();k++){
      if(solucion[k]!=0)
          std::cout<<solucion[k]<<" "<<sistema[k].getTipo()<<" de "<<sistema[k].getValor()<<" centimos\n";
   }
-  }
+  
   std::cin.ignore();
   std::cin.ignore();
 }

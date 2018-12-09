@@ -26,4 +26,6 @@ void CambioTiempo();
 void MochilaTiempo();
 
 void generarAleatoriamente(std::vector<Material> &mat,int i,int &tamMochila);
+
+std::vector<Moneda> getSistemaMonetario(SistemaMonetario sist);
 #endif

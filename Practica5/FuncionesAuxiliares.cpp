@@ -314,14 +314,14 @@ void Cambio(){
   fichero>>sist;//se meten los datos del fichero
   fichero.close();
 
-  std::cout<<"Introduce el numero a cambiar"<<std::endl;
+  std::cout<<"Introduce el numero a cambiar en centimos"<<std::endl;
   int n;
   std::cin>>n;
   if(n<1){std::cout<<"Error"<<std::endl; return;}
   
   std::vector<std::vector <int> > monedasCamb;
   cambAlgDinam(sist,n,monedasCamb);
-  std::vector<Moneda> sistema=sist.getSistemaMonetario();
+  std::vector<Moneda> sistema=getSistemaMonetario(sist);
 
 
   std::vector <int> solucion;
@@ -346,7 +346,7 @@ void Cambio(){
 
 void cambAlgDinam(const SistemaMonetario &sist,int n, std::vector<std::vector <int> > &vectorCamb){
   std::vector<std::vector <int> > monedasCamb(sist.size(),std::vector<int>(n+1,0));
-  std::vector<Moneda> sistema=sist.getSistemaMonetario();
+  std::vector<Moneda> sistema=getSistemaMonetario(sist);
 
 
   for(int i=0;i<monedasCamb.size();i++){
@@ -373,7 +373,7 @@ void cambAlgDinam(const SistemaMonetario &sist,int n, std::vector<std::vector <i
 }
 
 bool getSolCambio(const std::vector<std::vector <int> > &monedasCamb,const SistemaMonetario &sist,std::vector<int> &sol){
-   std::vector<Moneda> sistema=sist.getSistemaMonetario();
+   std::vector<Moneda> sistema=getSistemaMonetario(sist);
    std::vector<int> solucion(monedasCamb.size(),0);
    int i=monedasCamb.size()-1,j=monedasCamb[i].size()-1;
  
@@ -386,7 +386,7 @@ bool getSolCambio(const std::vector<std::vector <int> > &monedasCamb,const Siste
          }
        }
     }
-   if(i==0&& monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){ solucion[0]++;}
+   if(i==0&& monedasCamb[i][j]==1+monedasCamb[i][j-sistema[i].getValor()]){ solucion[0]+=monedasCamb[i][j];}
    sol=solucion;
    return true;
 }
@@ -398,3 +398,14 @@ int min(int i,int j){
     else return j;
 }
 
+std::vector<Moneda> getSistemaMonetario(SistemaMonetario sist){
+   std::vector<Moneda> m_;
+   sist.gotoFirstCursor();
+   bool i=true;
+   while(i==true){
+     m_.push_back(sist.getCursor());
+     i=sist.gotoNextCursor();
+     }
+
+   return m_;
+}

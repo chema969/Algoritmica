@@ -1,10 +1,12 @@
 #ifndef FUNCIONES_AUXILIARES_HPP
 #define FUNCIONES_AUXILIARES_HPP
 #include <vector>
-#include "SistemaMonetario.hpp"
-#include "Material.hpp"
-#include "Mochila.hpp"
-
+#include "NReinas.hpp"
 int menu();
 
+void solucionNReinas();
+
+void BacktrackingNreinas(std::vector<NReinas> &soluciones,int n,bool unaSol=false);
+
+bool LasVegasNreinas(NReinas &solucion,int n);
 #endif

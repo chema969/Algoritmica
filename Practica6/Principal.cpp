@@ -16,6 +16,7 @@ int main(){
             break;
  
          case 1:  
+            solucionNReinas();
             break;
 
          case 2:

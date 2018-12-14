@@ -20,9 +20,11 @@ int main(){
             break;
 
          case 2:
+            solucionNReinasLasVegas();
             break;        
 
          case 3:
+            analisisBacktracking();
             break;
 
          case 4:

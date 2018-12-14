@@ -2,6 +2,7 @@
 #include "macros.hpp"
 #include "NReinas.hpp"
 #include "Tiempo.hpp"
+#include "MinimosCuadrados.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -91,6 +92,96 @@ void solucionNReinas(){
     std::cout<<soluciones[i]<<std::endl;
    }
   std::cin.ignore();
+
+}
+
+
+
+void solucionNReinasLasVegas(){
+  srand(time(NULL));
+   std::cout<<"Introduce la cantidad de reinas: ";
+   int n;
+   std::cin>>n;
+   if(n<3){
+     std::cout<<"Error, numero de reinas invalido"<<std::endl;
+     return;
+   }
+  NReinas prueba;
+  bool x=LasVegasNreinas(prueba,n);
+  while(!x){
+    x=LasVegasNreinas(prueba,n);
+  }
+  std::cout<<prueba<<std::endl; 
+  std::cin.ignore();
+}
+
+
+void analisisBacktracking(){
+ Clock tim;
+
+ std::cout<<"Introduce el limite inferior: ";
+   int n;
+   std::cin>>n;
+   if(n<3){
+     std::cout<<"Error, numero de reinas invalido"<<std::endl;
+     return;
+   }
+
+ std::cout<<"Introduce el limite inferior: ";
+   int lim;
+   std::cin>>lim;
+   if(lim<3||lim<n){
+     std::cout<<"Error, numero de reinas invalido"<<std::endl;
+     return;
+   }
+
+  std::cout<<"Introduce las repeticiones"<<std::endl;
+  int rep;
+  std::cin>>rep;
+  if(rep<1){std::cout<<"Error"<<std::endl; return;}
+  
+  std::vector <double> muestraReal;
+  std::vector <double> muestra;
+  std::vector <double> tiempo;
+  double tiempo_pasado;
+  double tam_medio;
+  for(int i=n;i<=lim;i++){
+      tiempo_pasado=0;
+      muestra.push_back(i);
+      muestraReal.push_back(factorial(i));
+   for(int k=0;k<rep;k++){
+      std::vector<NReinas> solucionNreinas;
+      tim.start();
+       BacktrackingNreinas(solucionNreinas,n);
+      if (tim.isStarted()){
+          tim.stop();
+          tiempo_pasado+=tim.elapsed();
+         }
+    }
+    tiempo.push_back(tiempo_pasado/rep);
+   } 
+
+  std::vector<double> tiempo_estimado(muestra.size());
+  std::vector<std::vector<double> > sol=calcularMinimosCuadrados(muestraReal, tiempo,2);
+  std::ofstream file;
+  file.open("NReinasBacktracking.txt");
+  for(int i=0;i<muestra.size();i++){
+     tiempo_estimado[i]=calcularValorAprox(muestraReal[i],sol,2);       
+     file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;}
+     
+  file.close();
+  system("../graficaMochila.sh");
+  std::cout<<"\nFunción de minimos cuadrados: "<<sol[1][0]<<"X+"<<sol[0][0]<<std::endl;
+  std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl; 
+
+ double valor=1;
+ while(valor!=0){
+    std::cout<<"\nIntroduce valor para estimar(n=0,salir):";
+    std::cin>>valor;
+    if(valor>0){
+    std::cout<<"La estimacion del tiempo para ese valor es de ";
+    TiempoAlgoritmos(calcularValorAprox(valor,sol,2));}
+   }
 }
 
 
@@ -113,27 +204,36 @@ void BacktrackingNreinas(std::vector<NReinas> &soluciones,int n,bool unaSol){
            k++;
            aux.setReina(k,0);
         }
-      }
+      }////////////////////////////////////////////////////////// 5 3 8 4 7 1 6 2
      else k--;
    }
 }
 
 bool LasVegasNreinas(NReinas &solucion,int n){
-  NReinas aux;
+  NReinas aux(n);
+  std::vector <int> ok;
   int contador;
   for(int i=0;i<n;i++){
      contador=0;
      for(int j=0;j<n;j++){
-        aux.setReina(i,j);
+        aux.setReina(i,j+1);
         if(aux.lugar(i)){
-           contador++; 
+           contador++; ok.push_back(j+1);
         }
      } 
      if(contador==0) return false;
+     aux.setReina(i,ok[rand()%ok.size()]);
+     ok.clear();
   }
   if(contador==0) return false;  
   solucion=aux;
   return true;
 }
 
-
+double factorial(double i){
+  double x=1;
+  for(int j=1;j<=i;j++){
+    x=x*j;
+  }
+  return x;
+}

@@ -28,6 +28,11 @@ int main(){
             break;
 
          case 4:
+            analisisNReinasLasVegas();
+            break;
+
+         case 5:
+            comparacionNReinas();
             break;
 
          default:

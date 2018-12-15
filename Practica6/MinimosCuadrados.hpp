@@ -11,6 +11,6 @@ double covarianza(const std::vector<double> &v1,const std::vector<double> &v2);
 double desviacionTipica(const std::vector<double> &v);
 double media(const std::vector<double> &v);
 double varianza(const std::vector<double> &v);
-double calcularValorAprox(double valorAprox,const std::vector < std::vector <double> > &soluciones,int n);
-void TiempoAlgoritmos(long long int i);
+double calcularValorAprox(long double valorAprox,const std::vector < std::vector <double> > &soluciones,int n);
+void TiempoAlgoritmos(long double i);
 #endif

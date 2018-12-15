@@ -82,7 +82,7 @@ void solucionNReinas(){
    std::cout<<"Introduce la cantidad de reinas: ";
    int n;
    std::cin>>n;
-   if(n<3){
+   if(n<=3){
      std::cout<<"Error, numero de reinas invalido"<<std::endl;
      return;
    }
@@ -92,7 +92,7 @@ void solucionNReinas(){
     std::cout<<soluciones[i]<<std::endl;
    }
   std::cin.ignore();
-
+  std::cin.ignore();
 }
 
 
@@ -102,16 +102,20 @@ void solucionNReinasLasVegas(){
    std::cout<<"Introduce la cantidad de reinas: ";
    int n;
    std::cin>>n;
-   if(n<3){
+   if(n<=3){
      std::cout<<"Error, numero de reinas invalido"<<std::endl;
      return;
    }
   NReinas prueba;
+  int NPruebas=1;
   bool x=LasVegasNreinas(prueba,n);
   while(!x){
     x=LasVegasNreinas(prueba,n);
+    NPruebas++;
   }
   std::cout<<prueba<<std::endl; 
+  std::cout<<"Solucion sacada tras "<<NPruebas<<" pruebas\n";
+  std::cin.ignore();
   std::cin.ignore();
 }
 
@@ -122,20 +126,20 @@ void analisisBacktracking(){
  std::cout<<"Introduce el limite inferior: ";
    int n;
    std::cin>>n;
-   if(n<3){
+   if(n<=3){
      std::cout<<"Error, numero de reinas invalido"<<std::endl;
      return;
    }
 
- std::cout<<"Introduce el limite inferior: ";
+ std::cout<<"Introduce el limite superior: ";
    int lim;
    std::cin>>lim;
-   if(lim<3||lim<n){
+   if(lim<=3||lim<n){
      std::cout<<"Error, numero de reinas invalido"<<std::endl;
      return;
    }
 
-  std::cout<<"Introduce las repeticiones"<<std::endl;
+  std::cout<<"Introduce las repeticiones: ";
   int rep;
   std::cin>>rep;
   if(rep<1){std::cout<<"Error"<<std::endl; return;}
@@ -152,7 +156,7 @@ void analisisBacktracking(){
    for(int k=0;k<rep;k++){
       std::vector<NReinas> solucionNreinas;
       tim.start();
-       BacktrackingNreinas(solucionNreinas,n);
+      BacktrackingNreinas(solucionNreinas,i);
       if (tim.isStarted()){
           tim.stop();
           tiempo_pasado+=tim.elapsed();
@@ -170,7 +174,7 @@ void analisisBacktracking(){
      file<<muestra[i]<<" "<<tiempo[i]<<" "<<tiempo_estimado[i]<<std::endl;}
      
   file.close();
-  system("../graficaMochila.sh");
+  system("../graficaBacktracking.sh");
   std::cout<<"\nFunción de minimos cuadrados: "<<sol[1][0]<<"X+"<<sol[0][0]<<std::endl;
   std::cout<<"El coeficiente de determinación es de "<<determinacion(tiempo_estimado,tiempo)<<std::endl; 
 
@@ -180,8 +184,71 @@ void analisisBacktracking(){
     std::cin>>valor;
     if(valor>0){
     std::cout<<"La estimacion del tiempo para ese valor es de ";
-    TiempoAlgoritmos(calcularValorAprox(valor,sol,2));}
+    TiempoAlgoritmos(calcularValorAprox(factorial(valor),sol,2));}
    }
+}
+
+void analisisNReinasLasVegas(){
+   srand(time(NULL));
+   int n=8;
+ 
+   NReinas prueba;
+   std::cout<<"Introduce el numero de pruebas: ";
+   int rep;
+   std::cin>>rep;
+   double correctas=0,falsas=0;
+   for(int x=0;x<rep;x++){
+      if(LasVegasNreinas(prueba,n)){
+            correctas++;
+      } 
+      else falsas++; 
+   }
+  std::cout<<BICYAN<<"El porcentaje de resultados correctos frente a incorrectos es de "<<RESET<<(correctas/rep)*100<<BICYAN<<"%"<<RESET<<std::endl; 
+  std::cout<<BIBLUE<<"El algoritmo saca "<<RESET<<falsas/correctas<<BIBLUE<<" soluciones incorrectas por cada solucion correcta"<<RESET<<std::endl;
+  std::cin.ignore();
+  std::cin.ignore();
+}
+
+void comparacionNReinas(){
+   srand(time(NULL));
+    Clock tim;
+    std::vector<double> muestra;
+    std::vector<double> tiempoBacktrack;
+    std::vector<double> tiempoLasVegas;
+    std::cout<<"REALIZANDO PRUEBAS DESDE 8 HASTA 30 REINAS"<<std::endl;
+    for(int i=8;i<=30;i++){
+      muestra.push_back(i);
+      std::vector<NReinas> solucionNreinas;
+      NReinas p;
+      tim.start();
+      BacktrackingNreinas(solucionNreinas,i,true);
+      if (tim.isStarted()){
+          tim.stop();
+         tiempoBacktrack.push_back( tim.elapsed());
+      }
+      tim.start();
+      bool x=LasVegasNreinas(p,i);
+      while(!x){
+        x=LasVegasNreinas(p,i);
+      }
+      if (tim.isStarted()){
+          tim.stop();
+         tiempoLasVegas.push_back( tim.elapsed());
+      }
+    }    
+    long double totalB=0,totalLV=0;
+    for(int i=0;i<tiempoBacktrack.size();i++){
+       std::cout<<muestra[i]<<" reinas: backtracking "<<tiempoBacktrack[i]<<"mcs, las vegas "<<tiempoLasVegas[i]<<"mcs"<<std::endl;
+       totalB+=tiempoBacktrack[i]; totalLV+=tiempoLasVegas[i];
+    }
+    std::cout<<BIBLUE<<"TOTAL BACKTRACKING: "<<RESET;
+    TiempoAlgoritmos(totalB);
+    std::cout<<std::endl;
+    std::cout<<BIBLUE<<"TOTAL LAS VEGAS: "<<RESET;
+    TiempoAlgoritmos(totalLV);
+    std::cout<<std::endl;
+    std::cin.ignore();
+    std::cin.ignore();
 }
 
 
@@ -204,7 +271,7 @@ void BacktrackingNreinas(std::vector<NReinas> &soluciones,int n,bool unaSol){
            k++;
            aux.setReina(k,0);
         }
-      }////////////////////////////////////////////////////////// 5 3 8 4 7 1 6 2
+      }
      else k--;
    }
 }
@@ -230,8 +297,8 @@ bool LasVegasNreinas(NReinas &solucion,int n){
   return true;
 }
 
-double factorial(double i){
-  double x=1;
+long double factorial(double i){
+  long double x=1;
   for(int j=1;j<=i;j++){
     x=x*j;
   }

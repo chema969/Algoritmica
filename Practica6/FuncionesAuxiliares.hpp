@@ -14,5 +14,9 @@ void solucionNReinasLasVegas();
 
 void analisisBacktracking();
 
-double factorial(double i);
+long double factorial(double i);
+
+void analisisNReinasLasVegas();
+
+void comparacionNReinas();
 #endif

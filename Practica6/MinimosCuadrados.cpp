@@ -146,34 +146,40 @@ std::vector < std::vector< double> > calcularMinimosCuadradosCoef(const std::vec
    return minimosCuadrados;
 }
 
-void TiempoAlgoritmos(long long int i){
+void TiempoAlgoritmos(long double i){
 
- long long int mil=0,seg=0,min=0,hor=0,dia=0,anyo=0;
+ long double mil=0,seg=0,min=0,hor=0,dia=0,anyo=0;
  if(i/1000>=1){
    mil=i/1000;
-   i=i%1000;
+   i=fmod(i,1000);
+   mil=mil-i/1000;
  }
  if(mil/1000>=1){
    seg=mil/1000;
-   mil=mil%1000;
+   mil=fmod(mil,1000);
+   seg=seg-mil/1000;
  }
  if(seg/60>=1){
    min=seg/60;
-   seg=seg%60;
+   seg=fmod(seg,60);
+   min=min-seg/60;
  }
  if(min/60>=1){
    hor=min/60;
-   min=min%60;
+   min=fmod(min,60);
+   hor=hor-min/60;
  }
  if(hor/24>=1){
    dia=hor/24;
-   hor=hor%24;
+   hor=fmod(hor,24);
+   dia=dia-hor/24;
  }
  if(dia/365>=1){
    anyo=dia/365;
-   dia=dia%365;
+   dia=fmod(dia,365);
+   anyo=anyo-dia/365;
  }
- std::cout<<anyo<<" años, "<<dia<<" dias, "<<hor<<" horas, "<<min<<" minutos, "<<seg<<" segundos, "<<mil<<"milisegundos "<<i<<" microsegundos\n";
+ std::cout<<anyo<<" años, "<<dia<<" dias, "<<hor<<" horas, "<<min<<" minutos, "<<seg<<" segundos, "<<mil<<" milisegundos "<<i<<" microsegundos\n";
 
   
 }
@@ -190,7 +196,7 @@ double sumaVector(const std::vector<double> &vector,double exponente){
 
 
 
-double calcularValorAprox(double valorAprox,const std::vector < std::vector <double> > &soluciones,int n){
+double calcularValorAprox(long double valorAprox,const std::vector < std::vector <double> > &soluciones,int n){
     if(valorAprox>0){
          double valor=0;
          for(int i=0;i<n;i++){
